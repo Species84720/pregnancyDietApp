@@ -36,6 +36,8 @@ Onboarding collects pregnancy dating information, pregnancy type, current weight
 
 After onboarding, the home dashboard loads the active pregnancy profile from Firestore and shows pregnancy week/day, trimester, due date countdown, current weight, quick actions, and placeholder status cards for symptoms, meals, supplements, and nutrition.
 
+The symptom screen allows daily symptom logging with date, symptom name, severity, duration, and notes. Logs are stored under `users/{uid}/symptomLogs`, include current pregnancy week and trimester where available, and run local red-flag safety checks before any AI feature is used. Red-flag symptoms show urgent guidance to contact a gynecologist, midwife, or emergency services.
+
 ### Firebase and Google Sign-In setup
 
 For authentication builds, create a Firebase Android app for package `com.pregnancydiet.app`, enable Google as a Firebase Authentication provider, and place the downloaded `google-services.json` at `app/google-services.json`. This file is intentionally ignored by git.

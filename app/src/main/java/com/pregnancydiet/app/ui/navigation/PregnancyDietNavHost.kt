@@ -23,6 +23,7 @@ import com.pregnancydiet.app.ui.screens.HomeDashboardScreen
 import com.pregnancydiet.app.ui.screens.LoadingScreen
 import com.pregnancydiet.app.ui.screens.LoginScreen
 import com.pregnancydiet.app.ui.screens.OnboardingScreen
+import com.pregnancydiet.app.ui.screens.SymptomLoggingScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -100,11 +101,9 @@ fun PregnancyDietNavHost(
                 )
             }
             composable(AppRoute.Symptoms.route) {
-                AuthenticatedPlaceholderScreen(
-                    title = AppRoute.Symptoms.title,
-                    description = "Symptom logging and red-flag safety checks will be implemented in a later phase.",
-                    user = authState.user,
-                    errorMessage = authState.errorMessage,
+                SymptomLoggingScreen(
+                    uid = authState.user?.uid,
+                    onBackToHome = { navController.navigate(AppRoute.Home.route) },
                 )
             }
             composable(AppRoute.Supplements.route) {
