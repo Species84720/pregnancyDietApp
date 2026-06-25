@@ -30,7 +30,23 @@ From the repository root:
 ./gradlew :app:testDebugUnitTest
 ```
 
-The Phase 0 app launches to a Jetpack Compose placeholder home screen with a navigation shell and package structure for the planned features.
+The app launches to a Jetpack Compose authentication shell. Signed-out users see Google sign-in, and signed-in users route to onboarding or home based on their Firestore profile state.
+
+### Firebase and Google Sign-In setup
+
+For authentication builds, create a Firebase Android app for package `com.pregnancydiet.app`, enable Google as a Firebase Authentication provider, and place the downloaded `google-services.json` at `app/google-services.json`. This file is intentionally ignored by git.
+
+Set the OAuth web client ID locally with either a Gradle property or `local.properties` entry:
+
+```properties
+GOOGLE_WEB_CLIENT_ID=your-web-client-id.apps.googleusercontent.com
+```
+
+Deploy the included Firestore rules before using real user data:
+
+```bash
+firebase deploy --only firestore:rules
+```
 
 Start with:
 

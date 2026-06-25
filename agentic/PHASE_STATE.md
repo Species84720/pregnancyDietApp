@@ -11,7 +11,7 @@ Status values:
 | Order | Phase | Status | Date completed | Commit hash | Notes |
 |---:|---|---|---|---|---|
 | 0 | Project foundation | DONE | 2026-06-25 |  | Build: ./gradlew :app:assembleDebug passed. Tests: ./gradlew :app:testDebugUnitTest passed. Summary: created Kotlin Android Compose foundation with navigation shell, package structure, Firebase dependencies, Gradle wrapper, theme, and README setup. Known issues: none. |
-| 1 | Authentication and Firebase | TODO |  |  |  |
+| 1 | Authentication and Firebase | DONE | 2026-06-25 |  | Build: ./gradlew :app:assembleDebug passed. Tests: ./gradlew :app:testDebugUnitTest passed. Summary: added Firebase Google sign-in, auth state routing, Firestore user document create/update, sign out, Firestore rules, and setup docs. Known issues: Google Sign-In requires local Firebase configuration and GOOGLE_WEB_CLIENT_ID. |
 | 2 | Pregnancy onboarding with weight | TODO |  |  |  |
 | 3 | Home dashboard | TODO |  |  |  |
 | 4 | Symptom logging and safety flags | TODO |  |  |  |

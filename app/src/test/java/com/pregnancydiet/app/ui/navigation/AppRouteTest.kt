@@ -11,6 +11,11 @@ class AppRouteTest {
     }
 
     @Test
+    fun `splash route is available for auth state loading`() {
+        assertEquals("splash", AppRoute.Splash.route)
+    }
+
+    @Test
     fun `top level routes include primary tracking areas`() {
         val routes = AppRoute.topLevelRoutes.map { it.route }
 
