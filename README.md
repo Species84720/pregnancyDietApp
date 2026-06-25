@@ -13,6 +13,25 @@ The app uses:
 
 The app must be built in phases from MVP to final product. Health and pregnancy safety are core requirements. The AI must provide educational support only and must not diagnose, prescribe, or override gynecologist guidance.
 
+## Android project setup
+
+### Prerequisites
+
+- Android Studio with Android SDK 35 installed
+- JDK 17
+- No Firebase secrets are committed. Add environment-specific Firebase configuration only when implementing the Firebase phase.
+
+### Build and test
+
+From the repository root:
+
+```bash
+./gradlew :app:assembleDebug
+./gradlew :app:testDebugUnitTest
+```
+
+The Phase 0 app launches to a Jetpack Compose placeholder home screen with a navigation shell and package structure for the planned features.
+
 Start with:
 
 1. `agentic/MASTER_PLAN.md`

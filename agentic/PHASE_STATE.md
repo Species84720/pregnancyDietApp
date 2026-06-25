@@ -10,7 +10,7 @@ Status values:
 
 | Order | Phase | Status | Date completed | Commit hash | Notes |
 |---:|---|---|---|---|---|
-| 0 | Project foundation | TODO |  |  |  |
+| 0 | Project foundation | DONE | 2026-06-25 |  | Build: ./gradlew :app:assembleDebug passed. Tests: ./gradlew :app:testDebugUnitTest passed. Summary: created Kotlin Android Compose foundation with navigation shell, package structure, Firebase dependencies, Gradle wrapper, theme, and README setup. Known issues: none. |
 | 1 | Authentication and Firebase | TODO |  |  |  |
 | 2 | Pregnancy onboarding with weight | TODO |  |  |  |
 | 3 | Home dashboard | TODO |  |  |  |
