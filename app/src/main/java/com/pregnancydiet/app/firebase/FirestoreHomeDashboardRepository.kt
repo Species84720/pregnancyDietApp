@@ -7,6 +7,7 @@ import com.pregnancydiet.app.home.HomeDashboardMapper
 import com.pregnancydiet.app.model.PregnancyProfile
 import com.pregnancydiet.app.model.PregnancyType
 import com.pregnancydiet.app.model.WeightUnit
+import com.pregnancydiet.app.meals.MealStatusMapper
 import com.pregnancydiet.app.pregnancy.PregnancyCalculator
 import com.pregnancydiet.app.pregnancy.PregnancyDatingInput
 import com.pregnancydiet.app.supplements.SupplementStatusMapper
@@ -43,6 +44,11 @@ class FirestoreHomeDashboardRepository(
             ),
         )
         val today = LocalDate.now()
+        val mealStatus = FirestoreMealLogRepository()
+            .loadMealLogsForDate(uid = uid, date = today)
+            .getOrNull()
+            ?.let(MealStatusMapper::todayStatus)
+            ?: "No meals logged yet."
         val supplementStatus = FirestoreSupplementRepository()
             .loadSupplementsForDate(uid = uid, date = today)
             .getOrNull()
@@ -53,6 +59,7 @@ class FirestoreHomeDashboardRepository(
             pregnancyProfile = profile,
             progress = progress,
             today = today,
+            todayMealStatus = mealStatus,
             todaySupplementStatus = supplementStatus,
         )
     }

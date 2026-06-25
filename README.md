@@ -40,6 +40,8 @@ The symptom screen allows daily symptom logging with date, symptom name, severit
 
 The supplement screen tracks prescribed pills, vitamins, and supplements with dose, frequency, time, prescriber, instructions, start date, optional end date, and active status. Users can edit or deactivate supplements and mark them as taken for the current date. Supplements are stored under `users/{uid}/supplements`, intake logs are stored under `users/{uid}/supplementLogs`, and the home dashboard shows today’s supplement taken status. Safety copy reminds users not to stop or change prescribed supplements without consulting their gynecologist.
 
+The meal screen logs meals by date and type with one or more food items. Each item records food name, quantity, unit, optional weight in grams, and local nutrition estimate placeholders that match the future nutrition engine fields. Meal logs are stored under `users/{uid}/mealLogs`, support edit/delete, include pregnancy week and trimester where available, and the home dashboard shows today’s meal count.
+
 ### Firebase and Google Sign-In setup
 
 For authentication builds, create a Firebase Android app for package `com.pregnancydiet.app`, enable Google as a Firebase Authentication provider, and place the downloaded `google-services.json` at `app/google-services.json`. This file is intentionally ignored by git.

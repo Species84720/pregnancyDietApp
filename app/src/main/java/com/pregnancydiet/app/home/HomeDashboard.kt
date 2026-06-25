@@ -9,6 +9,7 @@ data class HomeDashboard(
     val progress: PregnancyProgress,
     val countdownDays: Long?,
     val today: LocalDate,
+    val todayMealStatus: String = "No meals logged yet.",
     val todaySupplementStatus: String = "No supplement status yet.",
 )
 
