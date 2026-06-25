@@ -1,0 +1,85 @@
+# Gradle / Android build outputs
+.gradle/
+build/
+**/build/
+captures/
+.externalNativeBuild/
+.cxx/
+*.apk
+*.ap_
+*.aab
+*.dex
+*.class
+
+# Android Studio / IntelliJ
+.idea/
+*.iml
+*.ipr
+*.iws
+out/
+.navigation/
+
+# Local machine configuration
+local.properties
+*.local
+
+# Signing keys and certificates
+*.jks
+*.keystore
+*.p12
+*.pem
+*.key
+keystore.properties
+signing.properties
+
+# Firebase / Google service credentials
+google-services.json
+GoogleService-Info.plist
+serviceAccount*.json
+firebase-debug.log
+.firebaserc.local
+
+# Environment files and secrets
+.env
+.env.*
+!.env.example
+secrets.properties
+
+# Kotlin / Java tooling
+.kotlin/
+*.hprof
+hs_err_pid*
+replay_pid*
+
+# Tests and reports
+coverage/
+reports/
+test-results/
+
+# Optional Firebase Cloud Functions / backend artifacts
+node_modules/
+functions/node_modules/
+functions/lib/
+functions/dist/
+functions/.runtimeconfig.json
+functions/.env
+functions/.env.*
+!functions/.env.example
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# VS Code workspace-local settings
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json.example
+*** End Patch
