@@ -69,6 +69,22 @@ class AuthViewModel(
         _uiState.update { it.copy(errorMessage = null) }
     }
 
+    fun refreshUserProfile() {
+        val user = _uiState.value.user ?: return
+        viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true, errorMessage = null) }
+            val profileResult = userProfileRepository.getUserProfile(user.uid)
+            val profile = profileResult.getOrNull()
+            _uiState.value = _uiState.value.copy(
+                isLoading = false,
+                user = user,
+                userProfile = profile,
+                destination = AuthRouteResolver.resolve(user, profile),
+                errorMessage = profileResult.exceptionOrNull()?.toUserFacingMessage(),
+            )
+        }
+    }
+
     private fun observeAuthState() {
         viewModelScope.launch {
             authRepository.observeAuthState().collectLatest { user ->

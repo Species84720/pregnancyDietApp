@@ -21,6 +21,7 @@ import com.pregnancydiet.app.auth.AuthViewModel
 import com.pregnancydiet.app.ui.screens.AuthenticatedPlaceholderScreen
 import com.pregnancydiet.app.ui.screens.LoadingScreen
 import com.pregnancydiet.app.ui.screens.LoginScreen
+import com.pregnancydiet.app.ui.screens.OnboardingScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -83,11 +84,9 @@ fun PregnancyDietNavHost(
                 )
             }
             composable(AppRoute.Onboarding.route) {
-                AuthenticatedPlaceholderScreen(
-                    title = AppRoute.Onboarding.title,
-                    description = "You are signed in. Pregnancy profile onboarding will be implemented in the next phase.",
+                OnboardingScreen(
                     user = authState.user,
-                    errorMessage = authState.errorMessage,
+                    onCompleted = authViewModel::refreshUserProfile,
                 )
             }
             composable(AppRoute.Pregnancy.route) {

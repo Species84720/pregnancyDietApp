@@ -32,6 +32,8 @@ From the repository root:
 
 The app launches to a Jetpack Compose authentication shell. Signed-out users see Google sign-in, and signed-in users route to onboarding or home based on their Firestore profile state.
 
+Onboarding collects pregnancy dating information, pregnancy type, current weight, optional height and pre-pregnancy weight, allergies, dietary restrictions, and medical conditions. Profiles are stored under `users/{uid}/pregnancyProfiles`, and the first onboarding weight is stored under `users/{uid}/weightLogs`.
+
 ### Firebase and Google Sign-In setup
 
 For authentication builds, create a Firebase Android app for package `com.pregnancydiet.app`, enable Google as a Firebase Authentication provider, and place the downloaded `google-services.json` at `app/google-services.json`. This file is intentionally ignored by git.
