@@ -172,7 +172,7 @@ private fun DashboardContent(
             onAddSupplement = onAddSupplement,
             onViewNutrition = onViewNutrition,
         )
-        TodayPlaceholderSection()
+        TodayPlaceholderSection(dashboard)
         Text(
             text = AppConstants.MEDICAL_DISCLAIMER,
             style = MaterialTheme.typography.bodySmall,
@@ -263,14 +263,14 @@ private fun QuickActionsCard(
 }
 
 @Composable
-private fun TodayPlaceholderSection() {
+private fun TodayPlaceholderSection(dashboard: HomeDashboard) {
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         Text(
             text = "Today",
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.SemiBold,
         )
-        HomeDashboardMapper.placeholderCards().forEach { card ->
+        HomeDashboardMapper.placeholderCards(dashboard).forEach { card ->
             PlaceholderStatusCard(card)
         }
     }

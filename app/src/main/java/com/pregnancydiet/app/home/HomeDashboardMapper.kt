@@ -11,11 +11,13 @@ object HomeDashboardMapper {
         pregnancyProfile: PregnancyProfile,
         progress: PregnancyProgress,
         today: LocalDate = LocalDate.now(),
+        todaySupplementStatus: String = "No supplement status yet.",
     ): HomeDashboard = HomeDashboard(
         pregnancyProfile = pregnancyProfile,
         progress = progress,
         countdownDays = progress.estimatedDueDate?.let { ChronoUnit.DAYS.between(today, it).coerceAtLeast(0) },
         today = today,
+        todaySupplementStatus = todaySupplementStatus,
     )
 
     fun currentWeightLabel(profile: PregnancyProfile): String = "%.1f kg".format(Locale.US, profile.currentWeightKg)
@@ -27,10 +29,10 @@ object HomeDashboardMapper {
         else -> "$countdownDays days until estimated due date"
     }
 
-    fun placeholderCards(): List<DashboardPlaceholderCard> = listOf(
+    fun placeholderCards(dashboard: HomeDashboard? = null): List<DashboardPlaceholderCard> = listOf(
         DashboardPlaceholderCard("Today's symptoms", "No symptom logs yet."),
         DashboardPlaceholderCard("Today's meals", "No meals logged yet."),
-        DashboardPlaceholderCard("Today's supplements", "No supplement status yet."),
+        DashboardPlaceholderCard("Today's supplements", dashboard?.todaySupplementStatus ?: "No supplement status yet."),
         DashboardPlaceholderCard("Nutrition status", "Nutrition summary will appear after meal logging."),
     )
 }

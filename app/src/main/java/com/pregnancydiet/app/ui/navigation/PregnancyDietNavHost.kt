@@ -23,6 +23,7 @@ import com.pregnancydiet.app.ui.screens.HomeDashboardScreen
 import com.pregnancydiet.app.ui.screens.LoadingScreen
 import com.pregnancydiet.app.ui.screens.LoginScreen
 import com.pregnancydiet.app.ui.screens.OnboardingScreen
+import com.pregnancydiet.app.ui.screens.SupplementTrackingScreen
 import com.pregnancydiet.app.ui.screens.SymptomLoggingScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -107,11 +108,9 @@ fun PregnancyDietNavHost(
                 )
             }
             composable(AppRoute.Supplements.route) {
-                AuthenticatedPlaceholderScreen(
-                    title = AppRoute.Supplements.title,
-                    description = "Prescribed supplement and pill tracking will be implemented in a later phase.",
-                    user = authState.user,
-                    errorMessage = authState.errorMessage,
+                SupplementTrackingScreen(
+                    uid = authState.user?.uid,
+                    onBackToHome = { navController.navigate(AppRoute.Home.route) },
                 )
             }
             composable(AppRoute.Meals.route) {

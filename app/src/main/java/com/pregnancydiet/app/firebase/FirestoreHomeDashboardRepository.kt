@@ -9,6 +9,7 @@ import com.pregnancydiet.app.model.PregnancyType
 import com.pregnancydiet.app.model.WeightUnit
 import com.pregnancydiet.app.pregnancy.PregnancyCalculator
 import com.pregnancydiet.app.pregnancy.PregnancyDatingInput
+import com.pregnancydiet.app.supplements.SupplementStatusMapper
 import kotlinx.coroutines.tasks.await
 import java.time.LocalDate
 
@@ -41,7 +42,19 @@ class FirestoreHomeDashboardRepository(
                 doctorConfirmedWeek = profile.doctorConfirmedWeek,
             ),
         )
-        HomeDashboardMapper.createDashboard(profile, progress)
+        val today = LocalDate.now()
+        val supplementStatus = FirestoreSupplementRepository()
+            .loadSupplementsForDate(uid = uid, date = today)
+            .getOrNull()
+            ?.let(SupplementStatusMapper::todayStatus)
+            ?: "No supplement status yet."
+
+        HomeDashboardMapper.createDashboard(
+            pregnancyProfile = profile,
+            progress = progress,
+            today = today,
+            todaySupplementStatus = supplementStatus,
+        )
     }
 }
 

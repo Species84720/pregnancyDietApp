@@ -38,6 +38,8 @@ After onboarding, the home dashboard loads the active pregnancy profile from Fir
 
 The symptom screen allows daily symptom logging with date, symptom name, severity, duration, and notes. Logs are stored under `users/{uid}/symptomLogs`, include current pregnancy week and trimester where available, and run local red-flag safety checks before any AI feature is used. Red-flag symptoms show urgent guidance to contact a gynecologist, midwife, or emergency services.
 
+The supplement screen tracks prescribed pills, vitamins, and supplements with dose, frequency, time, prescriber, instructions, start date, optional end date, and active status. Users can edit or deactivate supplements and mark them as taken for the current date. Supplements are stored under `users/{uid}/supplements`, intake logs are stored under `users/{uid}/supplementLogs`, and the home dashboard shows today’s supplement taken status. Safety copy reminds users not to stop or change prescribed supplements without consulting their gynecologist.
+
 ### Firebase and Google Sign-In setup
 
 For authentication builds, create a Firebase Android app for package `com.pregnancydiet.app`, enable Google as a Firebase Authentication provider, and place the downloaded `google-services.json` at `app/google-services.json`. This file is intentionally ignored by git.
