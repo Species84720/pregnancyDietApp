@@ -44,6 +44,8 @@ The meal screen logs meals by date and type with one or more food items. Each it
 
 The nutrition screen generates deterministic daily nutrition summaries from logged meals. Targets adjust by pregnancy week, trimester, current weight, optional pre-pregnancy weight and height, pregnancy type, dietary restrictions, and medical conditions. Daily summaries are stored under `users/{uid}/dailyNutritionSummaries/{date}`, include totals, targets, gaps, and stage priorities, and the screen shows daily gaps plus seven-day trend context using non-diagnostic, food-first language.
 
+The AI integration contract is defined on the Android side without embedding provider secrets or calling Pollinations.ai directly. The app has structured request payloads for daily nutrition summaries, symptom explanations, and weekly summaries, plus response models, prompt guardrails, backend service/repository interfaces, response parsing, validation, and safe fallback behavior. Until a secure backend or Firebase Cloud Function is configured, the default AI service returns the local fallback message and preserves deterministic nutrition and red-flag safety guidance.
+
 ### Firebase and Google Sign-In setup
 
 For authentication builds, create a Firebase Android app for package `com.pregnancydiet.app`, enable Google as a Firebase Authentication provider, and place the downloaded `google-services.json` at `app/google-services.json`. This file is intentionally ignored by git.
