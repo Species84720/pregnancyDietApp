@@ -54,6 +54,20 @@ class FirestoreHomeDashboardRepository(
             .getOrNull()
             ?.let(SupplementStatusMapper::todayStatus)
             ?: "No supplement status yet."
+        val nutritionStatus = userRef.collection(DAILY_NUTRITION_SUMMARIES_COLLECTION)
+            .document(today.toString())
+            .get()
+            .await()
+            .takeIf { it.exists() }
+            ?.let { snapshot ->
+                val gaps = snapshot.get("gaps") as? List<*>
+                when (val gapCount = gaps?.size ?: 0) {
+                    0 -> "Today's nutrition summary has no low or high tracked nutrients."
+                    1 -> "Today's nutrition summary has 1 nutrient to review."
+                    else -> "Today's nutrition summary has $gapCount nutrients to review."
+                }
+            }
+            ?: "Open Nutrition to calculate today's summary."
 
         HomeDashboardMapper.createDashboard(
             pregnancyProfile = profile,
@@ -61,12 +75,14 @@ class FirestoreHomeDashboardRepository(
             today = today,
             todayMealStatus = mealStatus,
             todaySupplementStatus = supplementStatus,
+            todayNutritionStatus = nutritionStatus,
         )
     }
 }
 
 private const val USERS_COLLECTION = "users"
 private const val PREGNANCY_PROFILES_COLLECTION = "pregnancyProfiles"
+private const val DAILY_NUTRITION_SUMMARIES_COLLECTION = "dailyNutritionSummaries"
 
 private fun DocumentSnapshot.toPregnancyProfile(): PregnancyProfile = PregnancyProfile(
     id = id,

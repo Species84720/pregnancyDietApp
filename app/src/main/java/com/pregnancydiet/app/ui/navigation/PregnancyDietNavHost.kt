@@ -23,6 +23,7 @@ import com.pregnancydiet.app.ui.screens.HomeDashboardScreen
 import com.pregnancydiet.app.ui.screens.LoadingScreen
 import com.pregnancydiet.app.ui.screens.LoginScreen
 import com.pregnancydiet.app.ui.screens.MealLoggingScreen
+import com.pregnancydiet.app.ui.screens.NutritionSummaryScreen
 import com.pregnancydiet.app.ui.screens.OnboardingScreen
 import com.pregnancydiet.app.ui.screens.SupplementTrackingScreen
 import com.pregnancydiet.app.ui.screens.SymptomLoggingScreen
@@ -121,11 +122,9 @@ fun PregnancyDietNavHost(
                 )
             }
             composable(AppRoute.Nutrition.route) {
-                AuthenticatedPlaceholderScreen(
-                    title = AppRoute.Nutrition.title,
-                    description = "Pregnancy-stage-aware nutrition calculations will be implemented in a later phase.",
-                    user = authState.user,
-                    errorMessage = authState.errorMessage,
+                NutritionSummaryScreen(
+                    uid = authState.user?.uid,
+                    onBackToHome = { navController.navigate(AppRoute.Home.route) },
                 )
             }
             composable(AppRoute.AiSummary.route) {

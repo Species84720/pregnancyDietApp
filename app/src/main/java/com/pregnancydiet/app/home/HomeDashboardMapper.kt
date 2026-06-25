@@ -13,6 +13,7 @@ object HomeDashboardMapper {
         today: LocalDate = LocalDate.now(),
         todayMealStatus: String = "No meals logged yet.",
         todaySupplementStatus: String = "No supplement status yet.",
+        todayNutritionStatus: String = "Nutrition summary will appear after meal logging.",
     ): HomeDashboard = HomeDashboard(
         pregnancyProfile = pregnancyProfile,
         progress = progress,
@@ -20,6 +21,7 @@ object HomeDashboardMapper {
         today = today,
         todayMealStatus = todayMealStatus,
         todaySupplementStatus = todaySupplementStatus,
+        todayNutritionStatus = todayNutritionStatus,
     )
 
     fun currentWeightLabel(profile: PregnancyProfile): String = "%.1f kg".format(Locale.US, profile.currentWeightKg)
@@ -35,6 +37,6 @@ object HomeDashboardMapper {
         DashboardPlaceholderCard("Today's symptoms", "No symptom logs yet."),
         DashboardPlaceholderCard("Today's meals", dashboard?.todayMealStatus ?: "No meals logged yet."),
         DashboardPlaceholderCard("Today's supplements", dashboard?.todaySupplementStatus ?: "No supplement status yet."),
-        DashboardPlaceholderCard("Nutrition status", "Nutrition summary will appear after meal logging."),
+        DashboardPlaceholderCard("Nutrition status", dashboard?.todayNutritionStatus ?: "Nutrition summary will appear after meal logging."),
     )
 }

@@ -11,6 +11,7 @@ data class HomeDashboard(
     val today: LocalDate,
     val todayMealStatus: String = "No meals logged yet.",
     val todaySupplementStatus: String = "No supplement status yet.",
+    val todayNutritionStatus: String = "Nutrition summary will appear after meal logging.",
 )
 
 data class DashboardPlaceholderCard(

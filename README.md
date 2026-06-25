@@ -42,6 +42,8 @@ The supplement screen tracks prescribed pills, vitamins, and supplements with do
 
 The meal screen logs meals by date and type with one or more food items. Each item records food name, quantity, unit, optional weight in grams, and local nutrition estimate placeholders that match the future nutrition engine fields. Meal logs are stored under `users/{uid}/mealLogs`, support edit/delete, include pregnancy week and trimester where available, and the home dashboard shows today’s meal count.
 
+The nutrition screen generates deterministic daily nutrition summaries from logged meals. Targets adjust by pregnancy week, trimester, current weight, optional pre-pregnancy weight and height, pregnancy type, dietary restrictions, and medical conditions. Daily summaries are stored under `users/{uid}/dailyNutritionSummaries/{date}`, include totals, targets, gaps, and stage priorities, and the screen shows daily gaps plus seven-day trend context using non-diagnostic, food-first language.
+
 ### Firebase and Google Sign-In setup
 
 For authentication builds, create a Firebase Android app for package `com.pregnancydiet.app`, enable Google as a Firebase Authentication provider, and place the downloaded `google-services.json` at `app/google-services.json`. This file is intentionally ignored by git.
