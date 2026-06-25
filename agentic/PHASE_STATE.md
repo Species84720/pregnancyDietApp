@@ -13,7 +13,7 @@ Status values:
 | 0 | Project foundation | DONE | 2026-06-25 |  | Build: ./gradlew :app:assembleDebug passed. Tests: ./gradlew :app:testDebugUnitTest passed. Summary: created Kotlin Android Compose foundation with navigation shell, package structure, Firebase dependencies, Gradle wrapper, theme, and README setup. Known issues: none. |
 | 1 | Authentication and Firebase | DONE | 2026-06-25 |  | Build: ./gradlew :app:assembleDebug passed. Tests: ./gradlew :app:testDebugUnitTest passed. Summary: added Firebase Google sign-in, auth state routing, Firestore user document create/update, sign out, Firestore rules, and setup docs. Known issues: Google Sign-In requires local Firebase configuration and GOOGLE_WEB_CLIENT_ID. |
 | 2 | Pregnancy onboarding with weight | DONE | 2026-06-25 |  | Build: ./gradlew :app:assembleDebug passed. Tests: ./gradlew :app:testDebugUnitTest passed. Summary: added pregnancy onboarding form, validation, pregnancy dating calculations, Firestore pregnancy profile and initial weight log storage, active profile update, completion routing, and calculation tests. Known issues: real saves require Firebase configuration. |
-| 3 | Home dashboard | TODO |  |  |  |
+| 3 | Home dashboard | DONE | 2026-06-25 |  | Build: ./gradlew :app:assembleDebug passed. Tests: ./gradlew :app:testDebugUnitTest passed. Summary: added Firestore-backed home dashboard with active pregnancy profile loading, pregnancy week/day, trimester, due date countdown, current weight, quick actions, placeholder daily status cards, and loading/empty/error states. Known issues: real data loading requires Firebase configuration. |
 | 4 | Symptom logging and safety flags | TODO |  |  |  |
 | 5 | Supplements and pill tracking | TODO |  |  |  |
 | 6 | Meal logging | TODO |  |  |  |

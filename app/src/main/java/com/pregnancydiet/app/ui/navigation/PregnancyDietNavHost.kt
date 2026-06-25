@@ -19,6 +19,7 @@ import androidx.navigation.compose.rememberNavController
 import com.pregnancydiet.app.auth.AuthDestination
 import com.pregnancydiet.app.auth.AuthViewModel
 import com.pregnancydiet.app.ui.screens.AuthenticatedPlaceholderScreen
+import com.pregnancydiet.app.ui.screens.HomeDashboardScreen
 import com.pregnancydiet.app.ui.screens.LoadingScreen
 import com.pregnancydiet.app.ui.screens.LoginScreen
 import com.pregnancydiet.app.ui.screens.OnboardingScreen
@@ -68,11 +69,12 @@ fun PregnancyDietNavHost(
                 LoadingScreen()
             }
             composable(AppRoute.Home.route) {
-                AuthenticatedPlaceholderScreen(
-                    title = "Home",
-                    description = "Your pregnancy dashboard will appear here after onboarding is complete.",
-                    user = authState.user,
-                    errorMessage = authState.errorMessage,
+                HomeDashboardScreen(
+                    uid = authState.user?.uid,
+                    onAddMeal = { navController.navigate(AppRoute.Meals.route) },
+                    onAddSymptom = { navController.navigate(AppRoute.Symptoms.route) },
+                    onAddSupplement = { navController.navigate(AppRoute.Supplements.route) },
+                    onViewNutrition = { navController.navigate(AppRoute.Nutrition.route) },
                 )
             }
             composable(AppRoute.Auth.route) {
