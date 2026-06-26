@@ -79,6 +79,7 @@ firebase deploy --only firestore:rules
 - Deploy Firestore rules so all reads and writes remain scoped to `request.auth.uid == userId`.
 - Do not add Pollinations.ai or other AI provider secrets to Android app code. Configure any real AI provider through a backend proxy only.
 - Review privacy and medical disclaimer copy before distribution; the app is educational wellness support and does not replace professional medical advice.
+- See `docs/FINAL_BUILD_REPORT.md` for final verification status, implemented MVP coverage, and deferred production prerequisites.
 
 Start with:
 
