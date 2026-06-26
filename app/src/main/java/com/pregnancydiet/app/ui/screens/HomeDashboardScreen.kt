@@ -42,6 +42,7 @@ fun HomeDashboardScreen(
     onViewNutrition: () -> Unit,
     onViewAiSummary: () -> Unit,
     onManageReminders: () -> Unit,
+    onViewReports: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: HomeDashboardViewModel = viewModel(),
 ) {
@@ -68,6 +69,7 @@ fun HomeDashboardScreen(
             onViewNutrition = onViewNutrition,
             onViewAiSummary = onViewAiSummary,
             onManageReminders = onManageReminders,
+            onViewReports = onViewReports,
             modifier = modifier,
         )
     }
@@ -158,6 +160,7 @@ private fun DashboardContent(
     onViewNutrition: () -> Unit,
     onViewAiSummary: () -> Unit,
     onManageReminders: () -> Unit,
+    onViewReports: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -179,6 +182,7 @@ private fun DashboardContent(
             onViewNutrition = onViewNutrition,
             onViewAiSummary = onViewAiSummary,
             onManageReminders = onManageReminders,
+            onViewReports = onViewReports,
         )
         TodayPlaceholderSection(dashboard)
         Text(
@@ -237,6 +241,7 @@ private fun QuickActionsCard(
     onViewNutrition: () -> Unit,
     onViewAiSummary: () -> Unit,
     onManageReminders: () -> Unit,
+    onViewReports: () -> Unit,
 ) {
     Card(modifier = Modifier.fillMaxWidth()) {
         Column(
@@ -276,6 +281,10 @@ private fun QuickActionsCard(
                 modifier = Modifier.fillMaxWidth(),
                 onClick = onManageReminders,
             ) { Text("Reminder Settings") }
+            OutlinedButton(
+                modifier = Modifier.fillMaxWidth(),
+                onClick = onViewReports,
+            ) { Text("Reports") }
         }
     }
 }

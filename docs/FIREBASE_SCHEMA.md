@@ -298,6 +298,21 @@ Phase 9 stores the displayed weekly AI summary and safe fallback state here.
 }
 ```
 
+## Reports and export reads
+
+The reports feature does not create a separate Firestore report document in Phase 11. It reads the signed-in user's existing scoped data from:
+
+- `pregnancyProfiles`
+- `weightLogs`
+- `symptomLogs`
+- `supplements`
+- `supplementLogs`
+- `mealLogs`
+- `dailyNutritionSummaries`
+- `weeklySummaries`
+
+The export is generated locally as factual shareable text for the selected date range.
+
 ## Firestore security rule concept
 
 ```javascript

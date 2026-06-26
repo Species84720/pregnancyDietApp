@@ -27,6 +27,7 @@ import com.pregnancydiet.app.ui.screens.MealLoggingScreen
 import com.pregnancydiet.app.ui.screens.NutritionSummaryScreen
 import com.pregnancydiet.app.ui.screens.OnboardingScreen
 import com.pregnancydiet.app.ui.screens.ReminderSettingsScreen
+import com.pregnancydiet.app.ui.screens.ReportsScreen
 import com.pregnancydiet.app.ui.screens.SupplementTrackingScreen
 import com.pregnancydiet.app.ui.screens.SymptomLoggingScreen
 
@@ -83,6 +84,7 @@ fun PregnancyDietNavHost(
                     onViewNutrition = { navController.navigate(AppRoute.Nutrition.route) },
                     onViewAiSummary = { navController.navigate(AppRoute.AiSummary.route) },
                     onManageReminders = { navController.navigate(AppRoute.Reminders.route) },
+                    onViewReports = { navController.navigate(AppRoute.Reports.route) },
                 )
             }
             composable(AppRoute.Auth.route) {
@@ -139,6 +141,12 @@ fun PregnancyDietNavHost(
             }
             composable(AppRoute.Reminders.route) {
                 ReminderSettingsScreen(
+                    uid = authState.user?.uid,
+                    onBackToHome = { navController.navigate(AppRoute.Home.route) },
+                )
+            }
+            composable(AppRoute.Reports.route) {
+                ReportsScreen(
                     uid = authState.user?.uid,
                     onBackToHome = { navController.navigate(AppRoute.Home.route) },
                 )
