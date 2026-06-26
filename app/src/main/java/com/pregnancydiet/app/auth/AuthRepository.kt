@@ -9,4 +9,6 @@ interface AuthRepository {
     suspend fun signInWithGoogleIdToken(idToken: String): Result<AuthenticatedUser>
 
     suspend fun signOut(): Result<Unit>
+
+    suspend fun deleteCurrentUser(): Result<Unit>
 }

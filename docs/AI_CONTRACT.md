@@ -8,6 +8,8 @@ The AI provides educational summaries for pregnancy symptoms, meals, supplements
 
 Android app should call backend. Backend calls Pollinations.ai. Do not expose AI credentials or unsafe prompt logic in the Android app.
 
+Before building a new AI payload, the Android app checks the signed-in user's privacy setting at `users/{uid}/privacySettings/default.aiProcessingAllowed`. If it is false, new AI summary generation is blocked and no AI payload is created.
+
 ```text
 Android App -> Backend/Firebase Function -> Pollinations.ai -> Backend Validation -> Firestore/App
 ```

@@ -24,10 +24,13 @@ import com.pregnancydiet.app.ui.screens.HomeDashboardScreen
 import com.pregnancydiet.app.ui.screens.LoadingScreen
 import com.pregnancydiet.app.ui.screens.LoginScreen
 import com.pregnancydiet.app.ui.screens.MealLoggingScreen
+import com.pregnancydiet.app.ui.screens.MedicalDisclaimerScreen
 import com.pregnancydiet.app.ui.screens.NutritionSummaryScreen
 import com.pregnancydiet.app.ui.screens.OnboardingScreen
+import com.pregnancydiet.app.ui.screens.PrivacyPolicyScreen
 import com.pregnancydiet.app.ui.screens.ReminderSettingsScreen
 import com.pregnancydiet.app.ui.screens.ReportsScreen
+import com.pregnancydiet.app.ui.screens.SettingsScreen
 import com.pregnancydiet.app.ui.screens.SupplementTrackingScreen
 import com.pregnancydiet.app.ui.screens.SymptomLoggingScreen
 
@@ -85,6 +88,7 @@ fun PregnancyDietNavHost(
                     onViewAiSummary = { navController.navigate(AppRoute.AiSummary.route) },
                     onManageReminders = { navController.navigate(AppRoute.Reminders.route) },
                     onViewReports = { navController.navigate(AppRoute.Reports.route) },
+                    onOpenSettings = { navController.navigate(AppRoute.Settings.route) },
                 )
             }
             composable(AppRoute.Auth.route) {
@@ -150,6 +154,24 @@ fun PregnancyDietNavHost(
                     uid = authState.user?.uid,
                     onBackToHome = { navController.navigate(AppRoute.Home.route) },
                 )
+            }
+            composable(AppRoute.Settings.route) {
+                SettingsScreen(
+                    user = authState.user,
+                    uid = authState.user?.uid,
+                    onBackToHome = { navController.navigate(AppRoute.Home.route) },
+                    onNotificationSettings = { navController.navigate(AppRoute.Reminders.route) },
+                    onDataExport = { navController.navigate(AppRoute.Reports.route) },
+                    onPrivacyPolicy = { navController.navigate(AppRoute.Privacy.route) },
+                    onMedicalDisclaimer = { navController.navigate(AppRoute.MedicalDisclaimer.route) },
+                    onSignOut = authViewModel::signOut,
+                )
+            }
+            composable(AppRoute.Privacy.route) {
+                PrivacyPolicyScreen(onBack = { navController.navigate(AppRoute.Settings.route) })
+            }
+            composable(AppRoute.MedicalDisclaimer.route) {
+                MedicalDisclaimerScreen(onBack = { navController.navigate(AppRoute.Settings.route) })
             }
         }
     }

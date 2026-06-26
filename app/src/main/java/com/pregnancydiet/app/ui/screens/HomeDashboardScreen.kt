@@ -43,6 +43,7 @@ fun HomeDashboardScreen(
     onViewAiSummary: () -> Unit,
     onManageReminders: () -> Unit,
     onViewReports: () -> Unit,
+    onOpenSettings: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: HomeDashboardViewModel = viewModel(),
 ) {
@@ -70,6 +71,7 @@ fun HomeDashboardScreen(
             onViewAiSummary = onViewAiSummary,
             onManageReminders = onManageReminders,
             onViewReports = onViewReports,
+            onOpenSettings = onOpenSettings,
             modifier = modifier,
         )
     }
@@ -161,6 +163,7 @@ private fun DashboardContent(
     onViewAiSummary: () -> Unit,
     onManageReminders: () -> Unit,
     onViewReports: () -> Unit,
+    onOpenSettings: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -183,6 +186,7 @@ private fun DashboardContent(
             onViewAiSummary = onViewAiSummary,
             onManageReminders = onManageReminders,
             onViewReports = onViewReports,
+            onOpenSettings = onOpenSettings,
         )
         TodayPlaceholderSection(dashboard)
         Text(
@@ -242,6 +246,7 @@ private fun QuickActionsCard(
     onViewAiSummary: () -> Unit,
     onManageReminders: () -> Unit,
     onViewReports: () -> Unit,
+    onOpenSettings: () -> Unit,
 ) {
     Card(modifier = Modifier.fillMaxWidth()) {
         Column(
@@ -285,6 +290,10 @@ private fun QuickActionsCard(
                 modifier = Modifier.fillMaxWidth(),
                 onClick = onViewReports,
             ) { Text("Reports") }
+            OutlinedButton(
+                modifier = Modifier.fillMaxWidth(),
+                onClick = onOpenSettings,
+            ) { Text("Settings & Privacy") }
         }
     }
 }

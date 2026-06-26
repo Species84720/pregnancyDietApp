@@ -19,6 +19,6 @@ class AppRouteTest {
     fun `top level routes include primary tracking areas`() {
         val routes = AppRoute.topLevelRoutes.map { it.route }
 
-        assertTrue(routes.containsAll(listOf("home", "pregnancy", "symptoms", "supplements", "meals", "nutrition")))
+        assertTrue(routes.containsAll(listOf("home", "pregnancy", "symptoms", "supplements", "meals", "nutrition", "settings")))
     }
 }

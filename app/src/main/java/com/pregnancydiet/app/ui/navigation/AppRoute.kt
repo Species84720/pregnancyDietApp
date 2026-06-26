@@ -16,8 +16,11 @@ sealed class AppRoute(
     data object AiSummary : AppRoute("ai-summary", "AI Summary")
     data object Reminders : AppRoute("reminders", "Reminders")
     data object Reports : AppRoute("reports", "Reports")
+    data object Settings : AppRoute("settings", "Settings")
+    data object Privacy : AppRoute("privacy", "Privacy")
+    data object MedicalDisclaimer : AppRoute("medical-disclaimer", "Medical Disclaimer")
 
     companion object {
-        val topLevelRoutes = listOf(Home, Pregnancy, Symptoms, Supplements, Meals, Nutrition, AiSummary, Reminders, Reports)
+        val topLevelRoutes = listOf(Home, Pregnancy, Symptoms, Supplements, Meals, Nutrition, AiSummary, Reminders, Reports, Settings)
     }
 }

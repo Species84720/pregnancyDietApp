@@ -135,6 +135,18 @@ users/{uid}
 }
 ```
 
+## users/{uid}/privacySettings/default
+
+```json
+{
+  "aiProcessingAllowed": true,
+  "updatedAtIso": "2026-06-26T10:15:00Z",
+  "updatedAt": "timestamp"
+}
+```
+
+When `aiProcessingAllowed` is false, the Android app blocks new AI summary generation before building a backend AI payload. Existing logs remain available for deterministic app features and local reports.
+
 ## users/{uid}/mealLogs/{mealId}
 
 ```json
@@ -312,6 +324,27 @@ The reports feature does not create a separate Firestore report document in Phas
 - `weeklySummaries`
 
 The export is generated locally as factual shareable text for the selected date range.
+
+## Settings and account deletion writes
+
+The settings feature reads `users/{uid}` and the signed-in user's active pregnancy profile. It updates only the active pregnancy profile under `users/{uid}/pregnancyProfiles/{profileId}` and writes privacy controls to `users/{uid}/privacySettings/default`.
+
+Account deletion deletes known user-owned subcollections under `users/{uid}` before deleting the user document and then attempts Firebase Authentication account deletion. Known subcollections include:
+
+- `pregnancyProfiles`
+- `weightLogs`
+- `symptomLogs`
+- `supplements`
+- `supplementLogs`
+- `mealLogs`
+- `dailyNutritionSummaries`
+- `weeklySummaries`
+- `weeklyNutritionSummaries`
+- `aiSummaries`
+- `reminderPreferences`
+- `privacySettings`
+
+Firebase Authentication may require recent sign-in before the account itself can be deleted. If auth deletion requires reauthentication, user-scoped Firestore data has already been removed and the user should sign in again before retrying account deletion.
 
 ## Firestore security rule concept
 

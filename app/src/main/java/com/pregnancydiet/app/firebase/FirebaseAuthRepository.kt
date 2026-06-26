@@ -38,6 +38,13 @@ class FirebaseAuthRepository : AuthRepository {
         FirebaseConfiguration.authOrNull()?.signOut()
         Unit
     }
+
+    override suspend fun deleteCurrentUser(): Result<Unit> = runCatching {
+        val firebaseAuth = FirebaseConfiguration.authOrNull()
+            ?: error(FirebaseConfiguration.NOT_CONFIGURED_MESSAGE)
+        firebaseAuth.currentUser?.delete()?.await()
+            ?: error("Sign in again before deleting your account.")
+    }
 }
 
 private fun com.google.firebase.auth.FirebaseUser.toAuthenticatedUser(): AuthenticatedUser = AuthenticatedUser(

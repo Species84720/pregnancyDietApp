@@ -40,6 +40,7 @@ class FirestoreAiSummaryRepository(
     ): Result<AiSummaryRecord> = runCatching {
         val firestore = FirebaseConfiguration.firestoreOrNull()
             ?: error(FirebaseConfiguration.NOT_CONFIGURED_MESSAGE)
+        requireAiProcessingAllowed(uid)
         val userRef = firestore.collection(USERS_COLLECTION).document(uid)
         val context = loadActiveProfileContext(uid)
         val dailySummary = nutritionRepository.loadDailySummary(uid, date).getOrThrow()
@@ -80,6 +81,7 @@ class FirestoreAiSummaryRepository(
     ): Result<AiSummaryRecord> = runCatching {
         val firestore = FirebaseConfiguration.firestoreOrNull()
             ?: error(FirebaseConfiguration.NOT_CONFIGURED_MESSAGE)
+        requireAiProcessingAllowed(uid)
         val context = loadActiveProfileContext(uid)
         val symptoms = loadSymptomLogsForDate(uid, date)
         val symptomLog = symptoms.firstOrNull()
@@ -120,6 +122,7 @@ class FirestoreAiSummaryRepository(
     ): Result<AiSummaryRecord> = runCatching {
         val firestore = FirebaseConfiguration.firestoreOrNull()
             ?: error(FirebaseConfiguration.NOT_CONFIGURED_MESSAGE)
+        requireAiProcessingAllowed(uid)
         val context = loadActiveProfileContext(uid)
         val weeklyTrend = nutritionRepository.loadWeeklyTrend(uid, endDate).getOrThrow()
         val weekId = endDate.toWeekId()
@@ -190,6 +193,21 @@ class FirestoreAiSummaryRepository(
         return AiProfileContext(profile = profile, progress = progress)
     }
 
+    private suspend fun requireAiProcessingAllowed(uid: String) {
+        val firestore = FirebaseConfiguration.firestoreOrNull()
+            ?: error(FirebaseConfiguration.NOT_CONFIGURED_MESSAGE)
+        val allowed = firestore.collection(USERS_COLLECTION)
+            .document(uid)
+            .collection(PRIVACY_SETTINGS_COLLECTION)
+            .document(DEFAULT_DOCUMENT_ID)
+            .get()
+            .await()
+            .getBoolean("aiProcessingAllowed") ?: true
+        require(allowed) {
+            "AI summaries are turned off in Settings. Turn them on only if you want minimal structured logs sent through the backend for educational summaries."
+        }
+    }
+
     private suspend fun loadSymptomLogsForDate(uid: String, date: LocalDate): List<SymptomLog> {
         val firestore = FirebaseConfiguration.firestoreOrNull()
             ?: error(FirebaseConfiguration.NOT_CONFIGURED_MESSAGE)
@@ -234,6 +252,8 @@ private const val PREGNANCY_PROFILES_COLLECTION = "pregnancyProfiles"
 private const val DAILY_NUTRITION_SUMMARIES_COLLECTION = "dailyNutritionSummaries"
 private const val SYMPTOM_LOGS_COLLECTION = "symptomLogs"
 private const val WEEKLY_SUMMARIES_COLLECTION = "weeklySummaries"
+private const val PRIVACY_SETTINGS_COLLECTION = "privacySettings"
+private const val DEFAULT_DOCUMENT_ID = "default"
 
 private fun AiSummaryRecord.toFirestoreMap(): Map<String, Any?> = mapOf(
     "id" to id,

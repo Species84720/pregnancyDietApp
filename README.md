@@ -52,6 +52,8 @@ The reminders screen lets users enable or disable optional supplement reminders,
 
 The reports screen creates a factual date-range report for the user or gynecologist. It summarizes symptom history, supplement adherence, meal history, nutrition gaps, weight logs, and saved weekly AI summaries from only the signed-in user’s Firestore data. Reports can be shared as clean text and include dates, pregnancy weeks where available, and a clear non-diagnostic disclaimer.
 
+The settings screen shows profile details, lets users edit active pregnancy profile fields including allergies, dietary restrictions, and medical conditions, links to reminders and report export, and includes privacy and medical disclaimer screens. Privacy controls are stored under `users/{uid}/privacySettings/default`; disabling AI summaries blocks new AI generation requests. Account deletion uses confirmation, deletes known user-owned Firestore subcollections under `users/{uid}`, then attempts Firebase Authentication account deletion, which may require a recent sign-in.
+
 ### Firebase and Google Sign-In setup
 
 For authentication builds, create a Firebase Android app for package `com.pregnancydiet.app`, enable Google as a Firebase Authentication provider, and place the downloaded `google-services.json` at `app/google-services.json`. This file is intentionally ignored by git.
