@@ -16,6 +16,6 @@ sealed class AppRoute(
     data object AiSummary : AppRoute("ai-summary", "AI Summary")
 
     companion object {
-        val topLevelRoutes = listOf(Home, Pregnancy, Symptoms, Supplements, Meals, Nutrition)
+        val topLevelRoutes = listOf(Home, Pregnancy, Symptoms, Supplements, Meals, Nutrition, AiSummary)
     }
 }

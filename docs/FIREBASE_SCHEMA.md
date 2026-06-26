@@ -79,7 +79,12 @@ users/{uid}
   ],
   "urgentFlag": false,
   "urgentReasons": [],
-  "aiSummaryId": "ai_123",
+  "aiSummary": {
+    "type": "symptom_explanation",
+    "summary": "Educational symptom context...",
+    "urgentWarning": false,
+    "disclaimer": "This is educational guidance and does not replace medical advice."
+  },
   "createdAt": "timestamp",
   "updatedAt": "timestamp"
 }
@@ -195,7 +200,36 @@ Document ID should be ISO date, for example `2026-06-25`.
     }
   ],
   "stagePriorities": ["folate", "iodine", "protein", "hydration"],
-  "aiSummaryId": "ai_456",
+  "aiSummary": {
+    "type": "daily_nutrition_summary",
+    "summary": "Your intake today appears lower in iron and calcium...",
+    "urgentWarning": false,
+    "disclaimer": "This is educational guidance and does not replace medical advice."
+  },
+  "createdAt": "timestamp",
+  "updatedAt": "timestamp"
+}
+```
+
+## users/{uid}/weeklySummaries/{weekId}
+
+Phase 9 stores the displayed weekly AI summary and safe fallback state here.
+
+```json
+{
+  "weekId": "2026-W26",
+  "pregnancyProfileId": "profile_123",
+  "pregnancyWeek": 8,
+  "trimester": 1,
+  "daysIncluded": 7,
+  "repeatedGaps": ["iron", "calcium"],
+  "aiSummary": {
+    "type": "weekly_summary",
+    "summary": "Educational weekly summary...",
+    "urgentWarning": false,
+    "fallback": false,
+    "disclaimer": "This is educational guidance and does not replace medical advice."
+  },
   "createdAt": "timestamp",
   "updatedAt": "timestamp"
 }

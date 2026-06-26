@@ -40,6 +40,7 @@ fun HomeDashboardScreen(
     onAddSymptom: () -> Unit,
     onAddSupplement: () -> Unit,
     onViewNutrition: () -> Unit,
+    onViewAiSummary: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: HomeDashboardViewModel = viewModel(),
 ) {
@@ -64,6 +65,7 @@ fun HomeDashboardScreen(
             onAddSymptom = onAddSymptom,
             onAddSupplement = onAddSupplement,
             onViewNutrition = onViewNutrition,
+            onViewAiSummary = onViewAiSummary,
             modifier = modifier,
         )
     }
@@ -152,6 +154,7 @@ private fun DashboardContent(
     onAddSymptom: () -> Unit,
     onAddSupplement: () -> Unit,
     onViewNutrition: () -> Unit,
+    onViewAiSummary: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -171,6 +174,7 @@ private fun DashboardContent(
             onAddSymptom = onAddSymptom,
             onAddSupplement = onAddSupplement,
             onViewNutrition = onViewNutrition,
+            onViewAiSummary = onViewAiSummary,
         )
         TodayPlaceholderSection(dashboard)
         Text(
@@ -227,6 +231,7 @@ private fun QuickActionsCard(
     onAddSymptom: () -> Unit,
     onAddSupplement: () -> Unit,
     onViewNutrition: () -> Unit,
+    onViewAiSummary: () -> Unit,
 ) {
     Card(modifier = Modifier.fillMaxWidth()) {
         Column(
@@ -258,6 +263,10 @@ private fun QuickActionsCard(
                     onClick = onViewNutrition,
                 ) { Text("View Nutrition") }
             }
+            OutlinedButton(
+                modifier = Modifier.fillMaxWidth(),
+                onClick = onViewAiSummary,
+            ) { Text("AI Insights") }
         }
     }
 }

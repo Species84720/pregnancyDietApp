@@ -46,6 +46,8 @@ The nutrition screen generates deterministic daily nutrition summaries from logg
 
 The AI integration contract is defined on the Android side without embedding provider secrets or calling Pollinations.ai directly. The app has structured request payloads for daily nutrition summaries, symptom explanations, and weekly summaries, plus response models, prompt guardrails, backend service/repository interfaces, response parsing, validation, and safe fallback behavior. Until a secure backend or Firebase Cloud Function is configured, the default AI service returns the local fallback message and preserves deterministic nutrition and red-flag safety guidance.
 
+The AI insights screen connects pregnancy profile, symptoms, meals, supplements, and deterministic nutrition summaries into daily, symptom, and weekly AI request flows. Generated output is validated before display, unsafe medical or medication-change advice is suppressed into a fallback, urgent warnings are shown prominently, and summaries are saved into user-scoped Firestore documents such as `dailyNutritionSummaries/{date}.aiSummary`, `symptomLogs/{logId}.aiSummary`, and `weeklySummaries/{weekId}`. AI failures do not block meal, symptom, supplement, or nutrition logging.
+
 ### Firebase and Google Sign-In setup
 
 For authentication builds, create a Firebase Android app for package `com.pregnancydiet.app`, enable Google as a Firebase Authentication provider, and place the downloaded `google-services.json` at `app/google-services.json`. This file is intentionally ignored by git.

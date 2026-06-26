@@ -18,6 +18,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.pregnancydiet.app.auth.AuthDestination
 import com.pregnancydiet.app.auth.AuthViewModel
+import com.pregnancydiet.app.ui.screens.AiSummaryScreen
 import com.pregnancydiet.app.ui.screens.AuthenticatedPlaceholderScreen
 import com.pregnancydiet.app.ui.screens.HomeDashboardScreen
 import com.pregnancydiet.app.ui.screens.LoadingScreen
@@ -79,6 +80,7 @@ fun PregnancyDietNavHost(
                     onAddSymptom = { navController.navigate(AppRoute.Symptoms.route) },
                     onAddSupplement = { navController.navigate(AppRoute.Supplements.route) },
                     onViewNutrition = { navController.navigate(AppRoute.Nutrition.route) },
+                    onViewAiSummary = { navController.navigate(AppRoute.AiSummary.route) },
                 )
             }
             composable(AppRoute.Auth.route) {
@@ -128,11 +130,9 @@ fun PregnancyDietNavHost(
                 )
             }
             composable(AppRoute.AiSummary.route) {
-                AuthenticatedPlaceholderScreen(
-                    title = AppRoute.AiSummary.title,
-                    description = "Educational AI summaries will use a backend proxy in a later phase.",
-                    user = authState.user,
-                    errorMessage = authState.errorMessage,
+                AiSummaryScreen(
+                    uid = authState.user?.uid,
+                    onBackToHome = { navController.navigate(AppRoute.Home.route) },
                 )
             }
         }
