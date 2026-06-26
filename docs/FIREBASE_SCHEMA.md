@@ -147,6 +147,8 @@ users/{uid}
 
 When `aiProcessingAllowed` is false, the Android app blocks new AI summary generation before building a backend AI payload. Existing logs remain available for deterministic app features and local reports.
 
+AI access mode, Pollinations user credentials, and local AI usage estimates are stored locally on the device. Pollinations user credentials are not stored in Firestore. Usage history stores metadata only and does not include prompts, responses, symptoms, weights, pregnancy dates, medications, supplements, or credentials.
+
 ## users/{uid}/mealLogs/{mealId}
 
 ```json

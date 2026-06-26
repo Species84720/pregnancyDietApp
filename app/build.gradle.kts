@@ -22,6 +22,10 @@ val googleWebClientId = providers.gradleProperty("GOOGLE_WEB_CLIENT_ID").orNull
     ?: localProperties.getProperty("GOOGLE_WEB_CLIENT_ID")
     ?: ""
 
+val pollinationsPublicKey = providers.gradleProperty("POLLINATIONS_PUBLIC_KEY").orNull
+    ?: localProperties.getProperty("POLLINATIONS_PUBLIC_KEY")
+    ?: ""
+
 android {
     namespace = "com.pregnancydiet.app"
     compileSdk = 35
@@ -35,6 +39,8 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         resValue("string", "google_web_client_id", googleWebClientId)
+        buildConfigField("String", "POLLINATIONS_PUBLIC_KEY", "\"$pollinationsPublicKey\"")
+        buildConfigField("String", "POLLINATIONS_BASE_URL", "\"https://text.pollinations.ai\"")
     }
 
     buildTypes {
@@ -58,6 +64,7 @@ android {
 
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 
@@ -77,6 +84,8 @@ dependencies {
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.kotlinx.coroutines.play.services)
     implementation(libs.kotlinx.serialization.json)
+    implementation(libs.okhttp)
+    implementation(libs.androidx.security.crypto)
 
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.auth)

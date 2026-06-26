@@ -40,6 +40,7 @@ import com.pregnancydiet.app.common.AppConstants
 fun AiSummaryScreen(
     uid: String?,
     onBackToHome: () -> Unit,
+    onOpenAiUsage: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: AiSummaryViewModel = viewModel(),
 ) {
@@ -61,6 +62,7 @@ fun AiSummaryScreen(
         onGenerateSymptomGuidance = { viewModel.generateSymptomGuidance(uid.orEmpty()) },
         onGenerateWeeklySummary = { viewModel.generateWeeklySummary(uid.orEmpty()) },
         onBackToHome = onBackToHome,
+        onOpenAiUsage = onOpenAiUsage,
         modifier = modifier,
     )
 }
@@ -78,6 +80,7 @@ private fun AiSummaryContent(
     onGenerateSymptomGuidance: () -> Unit,
     onGenerateWeeklySummary: () -> Unit,
     onBackToHome: () -> Unit,
+    onOpenAiUsage: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -102,6 +105,7 @@ private fun AiSummaryContent(
         }
 
         AiSafetyIntroCard()
+        AiUsageCompactIndicator(onOpenAiUsage = onOpenAiUsage)
         AiSummaryControls(
             selectedDate = selectedDate,
             activeAction = activeAction,

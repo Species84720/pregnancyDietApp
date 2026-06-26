@@ -52,6 +52,7 @@ fun SettingsScreen(
     onBackToHome: () -> Unit,
     onNotificationSettings: () -> Unit,
     onDataExport: () -> Unit,
+    onAiUsage: () -> Unit,
     onPrivacyPolicy: () -> Unit,
     onMedicalDisclaimer: () -> Unit,
     onSignOut: () -> Unit,
@@ -100,6 +101,7 @@ fun SettingsScreen(
         onBackToHome = onBackToHome,
         onNotificationSettings = onNotificationSettings,
         onDataExport = onDataExport,
+        onAiUsage = onAiUsage,
         onPrivacyPolicy = onPrivacyPolicy,
         onMedicalDisclaimer = onMedicalDisclaimer,
         onSaveProfile = { viewModel.savePregnancyProfile(uid.orEmpty()) },
@@ -130,6 +132,7 @@ private fun SettingsContent(
     onBackToHome: () -> Unit,
     onNotificationSettings: () -> Unit,
     onDataExport: () -> Unit,
+    onAiUsage: () -> Unit,
     onPrivacyPolicy: () -> Unit,
     onMedicalDisclaimer: () -> Unit,
     onSaveProfile: () -> Unit,
@@ -205,6 +208,7 @@ private fun SettingsContent(
                 SettingsEntryPointsCard(
                     onNotificationSettings = onNotificationSettings,
                     onDataExport = onDataExport,
+                    onAiUsage = onAiUsage,
                 )
                 AccountActionsCard(
                     isDeletingAccount = state.isDeletingAccount,
@@ -431,6 +435,7 @@ private fun PrivacyControlsCard(
 private fun SettingsEntryPointsCard(
     onNotificationSettings: () -> Unit,
     onDataExport: () -> Unit,
+    onAiUsage: () -> Unit,
 ) {
     Card(modifier = Modifier.fillMaxWidth()) {
         Column(
@@ -450,6 +455,10 @@ private fun SettingsEntryPointsCard(
                 modifier = Modifier.fillMaxWidth(),
                 onClick = onDataExport,
             ) { Text("Data export and reports") }
+            OutlinedButton(
+                modifier = Modifier.fillMaxWidth(),
+                onClick = onAiUsage,
+            ) { Text("AI Usage") }
         }
     }
 }

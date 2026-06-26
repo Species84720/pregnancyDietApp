@@ -111,7 +111,7 @@ Not a login role in MVP. User may export summaries to share with gynecologist.
 
 | ID | Requirement |
 |---|---|
-| AI-01 | App uses backend proxy to call Pollinations.ai. |
+| AI-01 | App can call Pollinations.ai through a frontend provider using only client-safe credentials, with an optional backend proxy retained as compatibility fallback. |
 | AI-02 | AI receives structured context only. |
 | AI-03 | AI returns structured JSON. |
 | AI-04 | AI response is validated before display. |
@@ -119,6 +119,9 @@ Not a login role in MVP. User may export summaries to share with gynecologist.
 | AI-06 | AI does not diagnose or prescribe. |
 | AI-07 | AI defers to gynecologist for medical decisions. |
 | AI-08 | AI fallback message appears if service unavailable. |
+| AI-09 | User can choose free hourly AI or connect a Pollinations account/client-safe key. |
+| AI-10 | App rejects server-only `sk_` credentials in frontend code. |
+| AI-11 | AI usage history stores metadata only and excludes prompts, responses, credentials, and health details. |
 
 ## 4. Non-functional requirements
 

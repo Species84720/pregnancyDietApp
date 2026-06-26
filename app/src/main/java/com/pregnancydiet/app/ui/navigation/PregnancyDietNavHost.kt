@@ -20,6 +20,7 @@ import androidx.navigation.compose.rememberNavController
 import com.pregnancydiet.app.auth.AuthDestination
 import com.pregnancydiet.app.auth.AuthViewModel
 import com.pregnancydiet.app.ui.screens.AiSummaryScreen
+import com.pregnancydiet.app.ui.screens.AiUsageScreen
 import com.pregnancydiet.app.ui.screens.AuthenticatedPlaceholderScreen
 import com.pregnancydiet.app.ui.screens.HomeDashboardScreen
 import com.pregnancydiet.app.ui.screens.LoadingScreen
@@ -142,6 +143,7 @@ fun PregnancyDietNavHost(
                 AiSummaryScreen(
                     uid = authState.user?.uid,
                     onBackToHome = { navController.navigateHome() },
+                    onOpenAiUsage = { navController.navigateSingleTopTo(AppRoute.AiUsage.route) },
                 )
             }
             composable(AppRoute.Reminders.route) {
@@ -163,10 +165,14 @@ fun PregnancyDietNavHost(
                     onBackToHome = { navController.navigateHome() },
                     onNotificationSettings = { navController.navigateSingleTopTo(AppRoute.Reminders.route) },
                     onDataExport = { navController.navigateSingleTopTo(AppRoute.Reports.route) },
+                    onAiUsage = { navController.navigateSingleTopTo(AppRoute.AiUsage.route) },
                     onPrivacyPolicy = { navController.navigateSingleTopTo(AppRoute.Privacy.route) },
                     onMedicalDisclaimer = { navController.navigateSingleTopTo(AppRoute.MedicalDisclaimer.route) },
                     onSignOut = authViewModel::signOut,
                 )
+            }
+            composable(AppRoute.AiUsage.route) {
+                AiUsageScreen(onBackToSettings = { navController.navigateSettings() })
             }
             composable(AppRoute.Privacy.route) {
                 PrivacyPolicyScreen(onBack = { navController.navigateSettings() })

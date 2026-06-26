@@ -6,13 +6,34 @@ The AI provides educational summaries for pregnancy symptoms, meals, supplements
 
 ## Architecture
 
-Android app should call backend. Backend calls Pollinations.ai. Do not expose AI credentials or unsafe prompt logic in the Android app.
+Android app supports a frontend Pollinations provider for normal app AI use plus an optional backend provider for compatibility. Do not expose server-only credentials or unsafe prompt logic in the Android app.
 
 Before building a new AI payload, the Android app checks the signed-in user's privacy setting at `users/{uid}/privacySettings/default.aiProcessingAllowed`. If it is false, new AI summary generation is blocked and no AI payload is created.
 
 ```text
-Android App -> Backend/Firebase Function -> Pollinations.ai -> Backend Validation -> Firestore/App
+Android App -> Pollinations.ai frontend endpoint -> Android validation -> Firestore/App
+Android App -> Optional Backend/Firebase Function -> Pollinations.ai -> Backend Validation -> Firestore/App
 ```
+
+## Pollinations access modes
+
+### Free hourly AI
+
+- Uses `POLLINATIONS_PUBLIC_KEY`, a bundled client-safe publishable key expected to start with `pk_`.
+- Must never use a Pollinations `sk_` server secret key.
+- Intended for the free Pollinations option, usually limited to about 1 pollen per IP per hour.
+- The app tracks usage locally as an estimate only; Pollinations enforces the real allowance by IP/key.
+
+### User Pollinations account
+
+- User can connect a Pollinations account or client-safe user credential from Settings → AI Usage.
+- The credential is stored in encrypted local storage on the device.
+- Requests use the user credential instead of the bundled free hourly key.
+- If the credential is missing, invalid, unauthorized, or quota-limited, the app returns structured setup/quota/rate-limit UI states.
+
+### Secret-key rule
+
+Frontend/client calls may only use a `pk_` publishable key or a Pollinations-supported user/client credential. If a credential starts with `sk_`, frontend code rejects it because it is treated as a server-only secret key unless Pollinations officially documents that exact type as client-safe.
 
 ## System prompt
 
@@ -158,4 +179,8 @@ Before showing AI response:
 ```text
 I could not generate a personalized AI summary right now. Your logs were still saved. For any severe, unusual, or worrying symptoms, contact your gynecologist or urgent medical services.
 ```
+
+## Privacy and usage history
+
+AI usage history stores metadata only: feature, status, estimated pollen cost, retry time, and a short non-sensitive message. It must not store prompts, responses, symptoms, weights, pregnancy dates, medications, supplements, credentials, or free-text health data.
 

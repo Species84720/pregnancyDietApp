@@ -44,7 +44,7 @@ The meal screen logs meals by date and type with one or more food items. Each it
 
 The nutrition screen generates deterministic daily nutrition summaries from logged meals. Targets adjust by pregnancy week, trimester, current weight, optional pre-pregnancy weight and height, pregnancy type, dietary restrictions, and medical conditions. Daily summaries are stored under `users/{uid}/dailyNutritionSummaries/{date}`, include totals, targets, gaps, and stage priorities, and the screen shows daily gaps plus seven-day trend context using non-diagnostic, food-first language.
 
-The AI integration contract is defined on the Android side without embedding provider secrets or calling Pollinations.ai directly. The app has structured request payloads for daily nutrition summaries, symptom explanations, and weekly summaries, plus response models, prompt guardrails, backend service/repository interfaces, response parsing, validation, and safe fallback behavior. Until a secure backend or Firebase Cloud Function is configured, the default AI service returns the local fallback message and preserves deterministic nutrition and red-flag safety guidance.
+The AI integration supports direct frontend Pollinations access through a provider abstraction without embedding server-only secrets. The default access mode is “Free hourly AI,” which uses a bundled client-safe Pollinations publishable key and local estimated cooldown tracking for the free option, usually about 1 pollen per IP per hour. Users can also connect a Pollinations account or client-safe user key from Settings → AI Usage so AI requests use their own allowance. The app rejects `sk_` server secret keys in frontend code, never stores prompts/responses in usage history, and keeps backend AI access isolated as an optional compatibility provider.
 
 The AI insights screen connects pregnancy profile, symptoms, meals, supplements, and deterministic nutrition summaries into daily, symptom, and weekly AI request flows. Generated output is validated before display, unsafe medical or medication-change advice is suppressed into a fallback, urgent warnings are shown prominently, and summaries are saved into user-scoped Firestore documents such as `dailyNutritionSummaries/{date}.aiSummary`, `symptomLogs/{logId}.aiSummary`, and `weeklySummaries/{weekId}`. AI failures do not block meal, symptom, supplement, or nutrition logging.
 
@@ -66,6 +66,12 @@ Set the OAuth web client ID locally with either a Gradle property or `local.prop
 GOOGLE_WEB_CLIENT_ID=your-web-client-id.apps.googleusercontent.com
 ```
 
+Set the Pollinations publishable key locally with either a Gradle property or `local.properties` entry. This must be a client-safe publishable key that starts with `pk_`; never use a server-only `sk_` secret key in Android code, resources, Gradle files, logs, crash reports, public URLs, or git.
+
+```properties
+POLLINATIONS_PUBLIC_KEY=pk_your-client-safe-key
+```
+
 Deploy the included Firestore rules before using real user data:
 
 ```bash
@@ -77,7 +83,8 @@ firebase deploy --only firestore:rules
 - Build before release with `./gradlew :app:assembleDebug` and run unit tests with `./gradlew :app:testDebugUnitTest`.
 - Configure Firebase Auth, Firestore, and local `GOOGLE_WEB_CLIENT_ID` before testing real sign-in.
 - Deploy Firestore rules so all reads and writes remain scoped to `request.auth.uid == userId`.
-- Do not add Pollinations.ai or other AI provider secrets to Android app code. Configure any real AI provider through a backend proxy only.
+- Do not add Pollinations.ai or other AI provider `sk_` secrets to Android app code. Frontend mode may use only a bundled `pk_` publishable key or a Pollinations-supported client/user credential.
+- Users can change AI access from Settings → AI Usage, connect/disconnect a Pollinations account key, and see local usage estimates. Free hourly usage is estimated locally; Pollinations enforces the real limit by IP/key.
 - Review privacy and medical disclaimer copy before distribution; the app is educational wellness support and does not replace professional medical advice.
 - See `docs/FINAL_BUILD_REPORT.md` for final verification status, implemented MVP coverage, and deferred production prerequisites.
 

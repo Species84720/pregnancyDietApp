@@ -25,7 +25,7 @@ Results:
 Additional verification checks:
 
 - Firestore rules and schema docs contain user-scoped access checks using `request.auth.uid == userId`.
-- Android source contains no direct `Pollinations.ai` references and no hardcoded AI provider API keys detected by focused grep checks.
+- Android AI access now supports a frontend Pollinations provider using only `pk_`/client-safe credentials. Focused checks found no real hardcoded AI provider API keys; `sk_` references are examples/tests and rejection logic only.
 - Medical disclaimer copy is present across primary screens and exports through `AppConstants.MEDICAL_DISCLAIMER` and AI disclaimer guardrails.
 - Local red-flag symptom detection is implemented in `RedFlagSymptomDetector` and is used before symptom persistence and before AI summaries.
 - Nutrition target calculation uses pregnancy week, trimester, current weight, optional pre-pregnancy weight, optional height, pregnancy type, restrictions, and medical conditions.
@@ -102,18 +102,22 @@ Status: **Implemented**
 
 ### AI contract and AI summaries
 
-Status: **Implemented with backend deployment deferred**
+Status: **Implemented with frontend Pollinations access modes**
 
 - Android-side AI request and response models are implemented.
+- `AiProvider` abstracts frontend Pollinations, optional backend compatibility, and fake/test providers.
+- Default access mode is Free hourly AI using `POLLINATIONS_PUBLIC_KEY`, a client-safe `pk_` publishable key.
+- Users can connect a Pollinations account/client-safe user key from Settings → AI Usage; credentials are stored in encrypted local storage and never logged.
+- Local AI usage tracking estimates free hourly cooldown, daily successes, rate limits, quota errors, and recent metadata-only events.
 - AI requests use structured context only.
 - AI responses are parsed and validated before display.
 - Safety validator enforces medical disclaimer presence, strips unsafe diagnosis/medication-change wording through fallback behavior, and forces urgent warning when local red-flag logic found a red flag.
 - AI privacy toggle blocks new AI payload creation when disabled.
-- The default AI service returns a safe fallback until a backend proxy is configured.
+- The optional backend provider is retained as a compatibility fallback but is no longer required for normal frontend Pollinations calls.
 
-Deferred production prerequisite:
+Production prerequisite:
 
-- Deploy a secure backend/Firebase Cloud Function to call Pollinations.ai or any AI provider. Provider secrets must remain outside Android code.
+- Configure `POLLINATIONS_PUBLIC_KEY` locally as a client-safe `pk_` value. Server-only `sk_` secrets must remain outside Android code, resources, Gradle files, logs, crash reports, public URLs, and git.
 
 ### Reports and export
 
@@ -164,9 +168,9 @@ Repository review confirms user data is addressed through `users/{uid}` and user
 
 ## AI safety and secrets verification
 
-- No direct Android source references to Pollinations.ai were found.
-- No hardcoded AI provider key patterns were found in Android source.
-- AI service abstraction returns a safe fallback until a backend proxy exists.
+- Android source now includes frontend Pollinations client code by design.
+- No real hardcoded AI provider key patterns were found in Android source; `sk_` references are documentation, tests, and runtime rejection rules.
+- Frontend credential validation rejects `sk_` server secret keys and missing/invalid public keys return setup-required UI states.
 - AI response validation requires disclaimers and falls back on unsafe content.
 - App red-flag detection is deterministic and local, and AI urgent warnings are derived from local red-flag state.
 
@@ -184,7 +188,7 @@ The following are explicitly deferred or environment-dependent:
 1. Real Firebase project setup and `google-services.json` are required locally and must not be committed.
 2. `GOOGLE_WEB_CLIENT_ID` must be supplied through local Gradle properties or `local.properties`.
 3. Firestore rules must be deployed before real user data is used.
-4. Secure backend AI proxy/Firebase Cloud Function must be deployed before real Pollinations.ai responses are available.
+4. `POLLINATIONS_PUBLIC_KEY` must be configured as a client-safe `pk_` publishable key before free hourly frontend AI is available.
 5. PDF/CSV export, barcode scanning, image meal recognition, clinician portal, lab interpretation, wearables, and community features are out of MVP scope.
 6. Firebase Authentication account deletion can require recent sign-in; retry after reauthentication if Firebase rejects deletion.
 

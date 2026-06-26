@@ -17,6 +17,7 @@ sealed class AppRoute(
     data object Reminders : AppRoute("reminders", "Reminders")
     data object Reports : AppRoute("reports", "Reports")
     data object Settings : AppRoute("settings", "Settings")
+    data object AiUsage : AppRoute("ai-usage", "AI Usage")
     data object Privacy : AppRoute("privacy", "Privacy")
     data object MedicalDisclaimer : AppRoute("medical-disclaimer", "Medical Disclaimer")
 
