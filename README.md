@@ -54,6 +54,8 @@ The reports screen creates a factual date-range report for the user or gynecolog
 
 The settings screen shows profile details, lets users edit active pregnancy profile fields including allergies, dietary restrictions, and medical conditions, links to reminders and report export, and includes privacy and medical disclaimer screens. Privacy controls are stored under `users/{uid}/privacySettings/default`; disabling AI summaries blocks new AI generation requests. Account deletion uses confirmation, deletes known user-owned Firestore subcollections under `users/{uid}`, then attempts Firebase Authentication account deletion, which may require a recent sign-in.
 
+Production polish improves route navigation so Home and Settings links do not create duplicate back-stack entries, tightens form validation against non-finite or unrealistic meal, weight, and height values, and adds a privacy-safe no-op analytics placeholder that allows only coarse screen/event names without payloads or health details.
+
 ### Firebase and Google Sign-In setup
 
 For authentication builds, create a Firebase Android app for package `com.pregnancydiet.app`, enable Google as a Firebase Authentication provider, and place the downloaded `google-services.json` at `app/google-services.json`. This file is intentionally ignored by git.
@@ -69,6 +71,14 @@ Deploy the included Firestore rules before using real user data:
 ```bash
 firebase deploy --only firestore:rules
 ```
+
+### MVP release notes
+
+- Build before release with `./gradlew :app:assembleDebug` and run unit tests with `./gradlew :app:testDebugUnitTest`.
+- Configure Firebase Auth, Firestore, and local `GOOGLE_WEB_CLIENT_ID` before testing real sign-in.
+- Deploy Firestore rules so all reads and writes remain scoped to `request.auth.uid == userId`.
+- Do not add Pollinations.ai or other AI provider secrets to Android app code. Configure any real AI provider through a backend proxy only.
+- Review privacy and medical disclaimer copy before distribution; the app is educational wellness support and does not replace professional medical advice.
 
 Start with:
 

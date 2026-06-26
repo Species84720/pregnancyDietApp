@@ -12,6 +12,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -81,14 +82,14 @@ fun PregnancyDietNavHost(
             composable(AppRoute.Home.route) {
                 HomeDashboardScreen(
                     uid = authState.user?.uid,
-                    onAddMeal = { navController.navigate(AppRoute.Meals.route) },
-                    onAddSymptom = { navController.navigate(AppRoute.Symptoms.route) },
-                    onAddSupplement = { navController.navigate(AppRoute.Supplements.route) },
-                    onViewNutrition = { navController.navigate(AppRoute.Nutrition.route) },
-                    onViewAiSummary = { navController.navigate(AppRoute.AiSummary.route) },
-                    onManageReminders = { navController.navigate(AppRoute.Reminders.route) },
-                    onViewReports = { navController.navigate(AppRoute.Reports.route) },
-                    onOpenSettings = { navController.navigate(AppRoute.Settings.route) },
+                    onAddMeal = { navController.navigateSingleTopTo(AppRoute.Meals.route) },
+                    onAddSymptom = { navController.navigateSingleTopTo(AppRoute.Symptoms.route) },
+                    onAddSupplement = { navController.navigateSingleTopTo(AppRoute.Supplements.route) },
+                    onViewNutrition = { navController.navigateSingleTopTo(AppRoute.Nutrition.route) },
+                    onViewAiSummary = { navController.navigateSingleTopTo(AppRoute.AiSummary.route) },
+                    onManageReminders = { navController.navigateSingleTopTo(AppRoute.Reminders.route) },
+                    onViewReports = { navController.navigateSingleTopTo(AppRoute.Reports.route) },
+                    onOpenSettings = { navController.navigateSingleTopTo(AppRoute.Settings.route) },
                 )
             }
             composable(AppRoute.Auth.route) {
@@ -116,64 +117,87 @@ fun PregnancyDietNavHost(
             composable(AppRoute.Symptoms.route) {
                 SymptomLoggingScreen(
                     uid = authState.user?.uid,
-                    onBackToHome = { navController.navigate(AppRoute.Home.route) },
+                    onBackToHome = { navController.navigateHome() },
                 )
             }
             composable(AppRoute.Supplements.route) {
                 SupplementTrackingScreen(
                     uid = authState.user?.uid,
-                    onBackToHome = { navController.navigate(AppRoute.Home.route) },
+                    onBackToHome = { navController.navigateHome() },
                 )
             }
             composable(AppRoute.Meals.route) {
                 MealLoggingScreen(
                     uid = authState.user?.uid,
-                    onBackToHome = { navController.navigate(AppRoute.Home.route) },
+                    onBackToHome = { navController.navigateHome() },
                 )
             }
             composable(AppRoute.Nutrition.route) {
                 NutritionSummaryScreen(
                     uid = authState.user?.uid,
-                    onBackToHome = { navController.navigate(AppRoute.Home.route) },
+                    onBackToHome = { navController.navigateHome() },
                 )
             }
             composable(AppRoute.AiSummary.route) {
                 AiSummaryScreen(
                     uid = authState.user?.uid,
-                    onBackToHome = { navController.navigate(AppRoute.Home.route) },
+                    onBackToHome = { navController.navigateHome() },
                 )
             }
             composable(AppRoute.Reminders.route) {
                 ReminderSettingsScreen(
                     uid = authState.user?.uid,
-                    onBackToHome = { navController.navigate(AppRoute.Home.route) },
+                    onBackToHome = { navController.navigateHome() },
                 )
             }
             composable(AppRoute.Reports.route) {
                 ReportsScreen(
                     uid = authState.user?.uid,
-                    onBackToHome = { navController.navigate(AppRoute.Home.route) },
+                    onBackToHome = { navController.navigateHome() },
                 )
             }
             composable(AppRoute.Settings.route) {
                 SettingsScreen(
                     user = authState.user,
                     uid = authState.user?.uid,
-                    onBackToHome = { navController.navigate(AppRoute.Home.route) },
-                    onNotificationSettings = { navController.navigate(AppRoute.Reminders.route) },
-                    onDataExport = { navController.navigate(AppRoute.Reports.route) },
-                    onPrivacyPolicy = { navController.navigate(AppRoute.Privacy.route) },
-                    onMedicalDisclaimer = { navController.navigate(AppRoute.MedicalDisclaimer.route) },
+                    onBackToHome = { navController.navigateHome() },
+                    onNotificationSettings = { navController.navigateSingleTopTo(AppRoute.Reminders.route) },
+                    onDataExport = { navController.navigateSingleTopTo(AppRoute.Reports.route) },
+                    onPrivacyPolicy = { navController.navigateSingleTopTo(AppRoute.Privacy.route) },
+                    onMedicalDisclaimer = { navController.navigateSingleTopTo(AppRoute.MedicalDisclaimer.route) },
                     onSignOut = authViewModel::signOut,
                 )
             }
             composable(AppRoute.Privacy.route) {
-                PrivacyPolicyScreen(onBack = { navController.navigate(AppRoute.Settings.route) })
+                PrivacyPolicyScreen(onBack = { navController.navigateSettings() })
             }
             composable(AppRoute.MedicalDisclaimer.route) {
-                MedicalDisclaimerScreen(onBack = { navController.navigate(AppRoute.Settings.route) })
+                MedicalDisclaimerScreen(onBack = { navController.navigateSettings() })
             }
         }
+    }
+}
+
+private fun NavController.navigateSingleTopTo(route: String) {
+    navigate(route) {
+        launchSingleTop = true
+        restoreState = true
+    }
+}
+
+private fun NavController.navigateHome() {
+    navigate(AppRoute.Home.route) {
+        popUpTo(AppRoute.Home.route) {
+            inclusive = false
+        }
+        launchSingleTop = true
+        restoreState = true
+    }
+}
+
+private fun NavController.navigateSettings() {
+    if (!popBackStack(AppRoute.Settings.route, inclusive = false)) {
+        navigateSingleTopTo(AppRoute.Settings.route)
     }
 }
 

@@ -12,10 +12,12 @@ object MealValidation {
         val quantity = form.quantity.trim().toDoubleOrNull()
             ?: error("Quantity must be a valid number.")
         require(quantity > 0.0) { "Quantity must be greater than zero." }
+        require(quantity.isPracticalAmount()) { "Quantity must be a practical finite amount." }
         val weightGrams = form.weightGrams.trim().takeIf { it.isNotBlank() }?.toDoubleOrNull()
             ?: if (form.weightGrams.isBlank()) null else error("Weight in grams must be a valid number.")
         if (weightGrams != null) {
             require(weightGrams > 0.0) { "Weight in grams must be greater than zero." }
+            require(weightGrams.isPracticalGramWeight()) { "Weight in grams must be a practical finite amount." }
         }
 
         MealFoodItem(
@@ -43,4 +45,8 @@ object MealValidation {
         return runCatching { LocalDate.parse(value.trim()) }
             .getOrElse { error("Date must use YYYY-MM-DD.") }
     }
+
+    private fun Double.isPracticalAmount(): Boolean = !isNaN() && !isInfinite() && this <= 1_000.0
+
+    private fun Double.isPracticalGramWeight(): Boolean = !isNaN() && !isInfinite() && this <= 10_000.0
 }

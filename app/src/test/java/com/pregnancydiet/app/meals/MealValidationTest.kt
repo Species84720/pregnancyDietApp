@@ -39,6 +39,36 @@ class MealValidationTest {
     }
 
     @Test
+    fun `non finite quantity is rejected`() {
+        val result = MealValidation.validateFoodItem(
+            MealFoodItemFormState(
+                foodName = "banana",
+                quantity = "Infinity",
+                unit = "piece",
+                weightGrams = "120",
+            ),
+        )
+
+        assertTrue(result.isFailure)
+        assertEquals("Quantity must be a practical finite amount.", result.exceptionOrNull()?.message)
+    }
+
+    @Test
+    fun `unrealistic gram weight is rejected`() {
+        val result = MealValidation.validateFoodItem(
+            MealFoodItemFormState(
+                foodName = "banana",
+                quantity = "1",
+                unit = "piece",
+                weightGrams = "20000",
+            ),
+        )
+
+        assertTrue(result.isFailure)
+        assertEquals("Weight in grams must be a practical finite amount.", result.exceptionOrNull()?.message)
+    }
+
+    @Test
     fun `meal requires at least one food item`() {
         val result = MealValidation.validateMeal(
             MealFormState(

@@ -68,6 +68,37 @@ class SettingsProfileValidationTest {
         assertEquals("Current weight is required.", result.exceptionOrNull()?.message)
     }
 
+    @Test
+    fun `non finite current weight is rejected`() {
+        val result = SettingsProfileValidation.validate(
+            SettingsFormState(
+                pregnancyProfileId = "profile-1",
+                dateFoundOut = "2026-06-01",
+                currentWeight = "Infinity",
+            ),
+            existingProfile(),
+        )
+
+        assertTrue(result.isFailure)
+        assertEquals("Current weight should be between 30 kg and 300 kg.", result.exceptionOrNull()?.message)
+    }
+
+    @Test
+    fun `unrealistic height is rejected`() {
+        val result = SettingsProfileValidation.validate(
+            SettingsFormState(
+                pregnancyProfileId = "profile-1",
+                dateFoundOut = "2026-06-01",
+                currentWeight = "70",
+                heightCm = "300",
+            ),
+            existingProfile(),
+        )
+
+        assertTrue(result.isFailure)
+        assertEquals("Height should be between 90 cm and 250 cm.", result.exceptionOrNull()?.message)
+    }
+
     private fun existingProfile(): PregnancyProfile = PregnancyProfile(
         id = "profile-1",
         dateFoundOut = "2026-06-01",

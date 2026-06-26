@@ -18,11 +18,15 @@ object SettingsProfileValidation {
         }
         val currentWeight = parseRequiredDouble(form.currentWeight, "Current weight")
         require(currentWeight > 0.0) { "Current weight must be greater than zero." }
+        val currentWeightKg = currentWeight.toKilograms(form.weightUnit)
+        require(currentWeightKg.isPracticalWeightKg()) { "Current weight should be between 30 kg and 300 kg." }
         val heightCm = parseOptionalDouble(form.heightCm, "Height")?.also {
             require(it > 0.0) { "Height must be greater than zero." }
+            require(it.isPracticalHeightCm()) { "Height should be between 90 cm and 250 cm." }
         }
         val prePregnancyWeight = parseOptionalDouble(form.prePregnancyWeight, "Pre-pregnancy weight")?.also {
             require(it > 0.0) { "Pre-pregnancy weight must be greater than zero." }
+            require(it.toKilograms(form.weightUnit).isPracticalWeightKg()) { "Pre-pregnancy weight should be between 30 kg and 300 kg." }
         }
 
         existingProfile.copy(
@@ -34,7 +38,7 @@ object SettingsProfileValidation {
             pregnancyType = form.pregnancyType,
             heightCm = heightCm,
             prePregnancyWeightKg = prePregnancyWeight?.toKilograms(form.weightUnit),
-            currentWeightKg = currentWeight.toKilograms(form.weightUnit),
+            currentWeightKg = currentWeightKg,
             weightUnit = form.weightUnit,
             allergies = form.allergies.toListValues(),
             dietaryRestrictions = form.dietaryRestrictions.toListValues(),
@@ -68,6 +72,10 @@ object SettingsProfileValidation {
         WeightUnit.Kg -> this
         WeightUnit.Lb -> this * 0.45359237
     }
+
+    private fun Double.isPracticalWeightKg(): Boolean = !isNaN() && !isInfinite() && this in 30.0..300.0
+
+    private fun Double.isPracticalHeightCm(): Boolean = !isNaN() && !isInfinite() && this in 90.0..250.0
 
     private fun String.toListValues(): List<String> = split(",")
         .map { it.trim() }
