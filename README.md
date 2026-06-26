@@ -48,6 +48,8 @@ The AI integration contract is defined on the Android side without embedding pro
 
 The AI insights screen connects pregnancy profile, symptoms, meals, supplements, and deterministic nutrition summaries into daily, symptom, and weekly AI request flows. Generated output is validated before display, unsafe medical or medication-change advice is suppressed into a fallback, urgent warnings are shown prominently, and summaries are saved into user-scoped Firestore documents such as `dailyNutritionSummaries/{date}.aiSummary`, `symptomLogs/{logId}.aiSummary`, and `weeklySummaries/{weekId}`. AI failures do not block meal, symptom, supplement, or nutrition logging.
 
+The reminders screen lets users enable or disable optional supplement reminders, one daily meal logging reminder, and one daily symptom check-in reminder. Reminder preferences are stored under `users/{uid}/reminderPreferences/default`, Android notification permission is requested before reminders are enabled, and scheduled notification copy is gentle, non-alarming, and never medical advice.
+
 ### Firebase and Google Sign-In setup
 
 For authentication builds, create a Firebase Android app for package `com.pregnancydiet.app`, enable Google as a Firebase Authentication provider, and place the downloaded `google-services.json` at `app/google-services.json`. This file is intentionally ignored by git.

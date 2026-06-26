@@ -121,6 +121,20 @@ users/{uid}
 }
 ```
 
+## users/{uid}/reminderPreferences/default
+
+```json
+{
+  "supplementRemindersEnabled": true,
+  "mealRemindersEnabled": false,
+  "symptomCheckInEnabled": true,
+  "mealReminderTime": "12:30",
+  "symptomReminderTime": "20:00",
+  "updatedAtIso": "2026-06-26T10:15:00",
+  "updatedAt": "timestamp"
+}
+```
+
 ## users/{uid}/mealLogs/{mealId}
 
 ```json

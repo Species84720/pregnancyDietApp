@@ -384,12 +384,12 @@ private fun ReminderPlaceholderCard() {
             verticalArrangement = Arrangement.spacedBy(6.dp),
         ) {
             Text(
-                text = "Reminder architecture",
+                text = "Reminder settings",
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.SemiBold,
             )
             Text(
-                text = "Times are stored with each supplement so notification reminders can be connected in the reminders phase.",
+                text = "Times saved here are used by optional supplement reminders. Manage notification reminders from the home dashboard reminder settings.",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
