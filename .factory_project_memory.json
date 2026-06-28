@@ -10,6 +10,7 @@
     "Validated with ANDROID_HOME=/opt/android-sdk ./gradlew :app:testDebugUnitTest --console=plain --no-daemon.",
     "Validated with ANDROID_HOME=/opt/android-sdk ./gradlew assembleDebug --console=plain --no-daemon.",
     "Debug APK generated at app/build/outputs/apk/debug/app-debug.apk.",
+    "GitHub release v0.1.4 publishes the generated debug APK as a release asset from the current branch.",
     "Baseline validation without ANDROID_HOME still fails because local.properties does not define sdk.dir; use ANDROID_HOME=/opt/android-sdk in this environment."
   ],
   "open_followups": [
@@ -25,12 +26,17 @@
       "timestamp": "2026-06-28T18:16:55+00:00",
       "action": "Update Existing Project",
       "prompt": "Check the code builds and generate the apk and publish it to git."
+    },
+    {
+      "timestamp": "2026-06-28T18:21:29+00:00",
+      "action": "Update Existing Project",
+      "prompt": "You did not release the app to github"
     }
   ],
   "last_task": {
     "status": "completed",
     "action": "Update Existing Project",
-    "updated_at": "2026-06-28T18:17:02+00:00",
-    "log_excerpt": "Recovered git access by adding /root/generatedCode/pregnancydiet as a safe directory, validated unit tests and debug assembly with ANDROID_HOME=/opt/android-sdk, generated app/build/outputs/apk/debug/app-debug.apk, fixed weekly AI summary cache reuse to key by ISO week, and prepared changes for git publish."
+    "updated_at": "2026-06-28T18:21:37+00:00",
+    "log_excerpt": "Released the app to GitHub by bumping Android version metadata to 0.1.4, rebuilding the debug APK, tagging v0.1.4, creating the GitHub release, and uploading the generated APK asset."
   }
 }

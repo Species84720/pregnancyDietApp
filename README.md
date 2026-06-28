@@ -81,6 +81,7 @@ firebase deploy --only firestore:rules
 ### MVP release notes
 
 - Build before release with `./gradlew :app:assembleDebug` and run unit tests with `./gradlew :app:testDebugUnitTest`.
+- The latest GitHub release is `v0.1.4` and includes the generated debug APK asset for installation testing.
 - Configure Firebase Auth, Firestore, and local `GOOGLE_WEB_CLIENT_ID` before testing real sign-in.
 - Deploy Firestore rules so all reads and writes remain scoped to `request.auth.uid == userId`.
 - Do not add Pollinations.ai or other AI provider `sk_` secrets to Android app code. Frontend mode may use only a bundled `pk_` publishable key or a Pollinations-supported client/user credential.
