@@ -26,7 +26,16 @@ data class DailyNutritionSummary(
     val targets: NutrientAmounts,
     val gaps: List<NutritionGap>,
     val stagePriorities: List<String>,
-)
+    val aiNutritionTotals: NutrientAmounts? = null,
+    val aiNutritionProcessed: Boolean = false,
+    val nutritionProcessedBy: String? = null,
+    val nutritionProcessingStatus: String? = null,
+) {
+    val effectiveTotals: NutrientAmounts
+        get() = aiNutritionTotals
+            ?.takeIf { aiNutritionProcessed && it.hasAnyTrackedValue() }
+            ?: totals
+}
 
 data class NutritionGap(
     val nutrient: String,
@@ -58,3 +67,18 @@ enum class GapSeverity(val firestoreValue: String) {
     Moderate("moderate"),
     High("high"),
 }
+
+fun NutrientAmounts.hasAnyTrackedValue(): Boolean = listOf(
+    calories,
+    proteinGrams,
+    fiberGrams,
+    folateMcg,
+    ironMg,
+    calciumMg,
+    vitaminDMcg,
+    vitaminB12Mcg,
+    iodineMcg,
+    omega3Mg,
+    cholineMg,
+    waterMl,
+).any { it > 0.0 }

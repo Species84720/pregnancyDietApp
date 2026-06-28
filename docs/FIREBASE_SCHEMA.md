@@ -272,6 +272,8 @@ Document ID should be ISO date, for example `2026-06-25`.
 
 When `dailyNutritionSummaries/{date}.aiSummary` exists with `nutritionProcessingStatus: "ai_processed"`, the app reuses it for repeat daily AI insight requests for that date instead of calling the AI provider again. Fallback summaries are logged but are not treated as AI-processed nutrition.
 
+Local daily nutrition regeneration uses merge writes so the saved AI fields remain attached to the date document. When `aiNutritionProcessed` is true and `aiNutritionTotals` is present, app nutrition summary, weekly summary, and report reads prefer `aiNutritionTotals` over deterministic local `totals`.
+
 ## users/{uid}/weeklySummaries/{weekId}
 
 Phase 9 stores the displayed weekly AI summary and safe fallback state here.
@@ -325,6 +327,8 @@ Phase 9 stores the displayed weekly AI summary and safe fallback state here.
 ```
 
 When `weeklySummaries/{weekId}.aiSummary` exists with `nutritionProcessingStatus: "ai_processed"`, the app reuses it for repeat weekly AI summary requests for that ISO week instead of calling the AI provider again.
+
+Weekly summaries are built from the effective daily nutrition totals. If daily records in the week have already saved AI nutrition totals, those saved AI totals are reused for weekly averaging instead of reprocessing the same meal nutrition values.
 
 ## users/{uid}/weeklyNutritionSummaries/{weekId}
 

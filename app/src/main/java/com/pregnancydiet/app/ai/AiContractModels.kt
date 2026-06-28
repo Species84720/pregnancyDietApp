@@ -38,6 +38,7 @@ data class AiSummaryRequest(
     val nutritionTargets: AiNutrientPayload = AiNutrientPayload(),
     val detectedGaps: List<String> = emptyList(),
     val weeklyRepeatedGaps: List<String> = emptyList(),
+    val nutritionAlreadyProcessedByAi: Boolean = false,
     val redFlagDetectedByApp: Boolean = false,
     val redFlagReasons: List<String> = emptyList(),
     val systemPromptVersion: String = AiPromptGuardrails.SYSTEM_PROMPT_VERSION,

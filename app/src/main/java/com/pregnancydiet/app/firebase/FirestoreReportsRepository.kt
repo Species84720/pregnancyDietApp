@@ -20,6 +20,7 @@ import com.pregnancydiet.app.model.SymptomEntry
 import com.pregnancydiet.app.model.SymptomLog
 import com.pregnancydiet.app.model.WeightLog
 import com.pregnancydiet.app.model.WeightUnit
+import com.pregnancydiet.app.model.hasAnyTrackedValue
 import com.pregnancydiet.app.pregnancy.PregnancyCalculator
 import com.pregnancydiet.app.pregnancy.PregnancyDatingInput
 import com.pregnancydiet.app.reports.GynecologistReport
@@ -279,21 +280,33 @@ private fun Map<*, *>.toFoodNutrition(): FoodNutrition = FoodNutrition(
     cholineMg = number("cholineMg"),
 )
 
-private fun DocumentSnapshot.toDailyNutritionSummary(): DailyNutritionSummary = DailyNutritionSummary(
-    date = getString("date").orEmpty(),
-    pregnancyProfileId = getString("pregnancyProfileId"),
-    pregnancyWeek = getLong("pregnancyWeek")?.toInt(),
-    trimester = getLong("trimester")?.toInt(),
-    currentWeightKg = getDouble("currentWeightKg") ?: 0.0,
-    nutritionProfileVersion = getString("nutritionProfileVersion").orEmpty(),
-    totals = (get("totals") as? Map<*, *>)?.toNutrientAmounts() ?: NutrientAmounts(),
-    targets = (get("targets") as? Map<*, *>)?.toNutrientAmounts() ?: NutrientAmounts(),
-    gaps = (get("gaps") as? List<*>)
-        ?.mapNotNull { it as? Map<*, *> }
-        ?.map { it.toNutritionGap() }
-        .orEmpty(),
-    stagePriorities = getStringList("stagePriorities"),
-)
+private fun DocumentSnapshot.toDailyNutritionSummary(): DailyNutritionSummary {
+    val localTotals = (get("totals") as? Map<*, *>)?.toNutrientAmounts() ?: NutrientAmounts()
+    val aiTotals = (get("aiNutritionTotals") as? Map<*, *>)?.toNutrientAmounts()
+    val aiNutritionProcessed = getBoolean("aiNutritionProcessed") ?: false
+    val effectiveTotals = aiTotals
+        ?.takeIf { aiNutritionProcessed && it.hasAnyTrackedValue() }
+        ?: localTotals
+    return DailyNutritionSummary(
+        date = getString("date").orEmpty(),
+        pregnancyProfileId = getString("pregnancyProfileId"),
+        pregnancyWeek = getLong("pregnancyWeek")?.toInt(),
+        trimester = getLong("trimester")?.toInt(),
+        currentWeightKg = getDouble("currentWeightKg") ?: 0.0,
+        nutritionProfileVersion = getString("nutritionProfileVersion").orEmpty(),
+        totals = effectiveTotals,
+        targets = (get("targets") as? Map<*, *>)?.toNutrientAmounts() ?: NutrientAmounts(),
+        gaps = (get("gaps") as? List<*>)
+            ?.mapNotNull { it as? Map<*, *> }
+            ?.map { it.toNutritionGap() }
+            .orEmpty(),
+        stagePriorities = getStringList("stagePriorities"),
+        aiNutritionTotals = aiTotals,
+        aiNutritionProcessed = aiNutritionProcessed,
+        nutritionProcessedBy = getString("nutritionProcessedBy"),
+        nutritionProcessingStatus = getString("nutritionProcessingStatus"),
+    )
+}
 
 private fun Map<*, *>.toNutrientAmounts(): NutrientAmounts = NutrientAmounts(
     calories = number("calories"),

@@ -51,7 +51,7 @@ object NutritionSummaryCalculator {
             .sorted()
         return WeeklyNutritionTrend(
             daysIncluded = summaries.size,
-            averageTotals = NutritionAmountMath.average(summaries.map { it.totals }),
+            averageTotals = NutritionAmountMath.average(summaries.map { it.effectiveTotals }),
             repeatedGaps = repeatedGaps,
             summaries = summaries,
         )

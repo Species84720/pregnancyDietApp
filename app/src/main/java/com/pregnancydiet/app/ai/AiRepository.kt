@@ -35,6 +35,8 @@ private fun AiSummaryRequest.toDietAiRequest(): DietAiRequest = DietAiRequest(
     medicalConditions = medicalConditions,
     nutritionGaps = detectedGaps,
     foodsToday = foodsToday,
+    nutritionTotals = nutritionTotals,
+    nutritionAlreadyProcessedByAi = nutritionAlreadyProcessedByAi,
 )
 
 private fun AiSummaryRequest.toSymptomAiRequest(): SymptomAiRequest = SymptomAiRequest(
@@ -51,6 +53,7 @@ private fun AiSummaryRequest.toPregnancyAiRequest(): PregnancyAiRequest = Pregna
     symptoms = symptomsToday,
     nutritionGaps = detectedGaps.ifEmpty { weeklyRepeatedGaps },
     nutritionTotals = nutritionTotals,
+    nutritionAlreadyProcessedByAi = nutritionAlreadyProcessedByAi,
     redFlagDetected = redFlagDetectedByApp,
     redFlagReasons = redFlagReasons,
 )

@@ -4,6 +4,7 @@ import com.pregnancydiet.app.model.FoodNutrition
 import com.pregnancydiet.app.model.MealFoodItem
 import com.pregnancydiet.app.model.MealLog
 import com.pregnancydiet.app.model.MealType
+import com.pregnancydiet.app.model.NutrientAmounts
 import com.pregnancydiet.app.model.PregnancyProfile
 import com.pregnancydiet.app.model.PregnancyType
 import com.pregnancydiet.app.model.WeightUnit
@@ -50,6 +51,35 @@ class NutritionSummaryCalculatorTest {
 
         assertEquals(2, trend.daysIncluded)
         assertTrue(trend.repeatedGaps.contains("Protein"))
+    }
+
+    @Test
+    fun `weekly trend averages saved AI nutrition totals when already processed`() {
+        val first = NutritionSummaryCalculator.dailySummary(
+            date = "2026-06-24",
+            pregnancyProfile = profile(),
+            pregnancyWeek = 24,
+            trimester = 2,
+            meals = listOf(meal(protein = 20.0, iron = 3.0)),
+        ).copy(
+            aiNutritionProcessed = true,
+            aiNutritionTotals = NutrientAmounts(proteinGrams = 80.0, ironMg = 12.0),
+        )
+        val second = NutritionSummaryCalculator.dailySummary(
+            date = "2026-06-25",
+            pregnancyProfile = profile(),
+            pregnancyWeek = 24,
+            trimester = 2,
+            meals = listOf(meal(protein = 22.0, iron = 4.0)),
+        ).copy(
+            aiNutritionProcessed = true,
+            aiNutritionTotals = NutrientAmounts(proteinGrams = 60.0, ironMg = 10.0),
+        )
+
+        val trend = NutritionSummaryCalculator.weeklyTrend(listOf(first, second))
+
+        assertEquals(70.0, trend.averageTotals.proteinGrams, 0.001)
+        assertEquals(11.0, trend.averageTotals.ironMg, 0.001)
     }
 
     private fun meal(protein: Double, iron: Double) = MealLog(

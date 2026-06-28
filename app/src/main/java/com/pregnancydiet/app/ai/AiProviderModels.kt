@@ -6,6 +6,7 @@ data class PregnancyAiRequest(
     val symptoms: List<AiSymptomContext> = emptyList(),
     val nutritionGaps: List<String> = emptyList(),
     val nutritionTotals: AiNutrientPayload = AiNutrientPayload(),
+    val nutritionAlreadyProcessedByAi: Boolean = false,
     val redFlagDetected: Boolean = false,
     val redFlagReasons: List<String> = emptyList(),
 )
@@ -18,6 +19,8 @@ data class DietAiRequest(
     val medicalConditions: List<String> = emptyList(),
     val nutritionGaps: List<String> = emptyList(),
     val foodsToday: List<AiFoodContext> = emptyList(),
+    val nutritionTotals: AiNutrientPayload = AiNutrientPayload(),
+    val nutritionAlreadyProcessedByAi: Boolean = false,
 )
 
 data class SymptomAiRequest(

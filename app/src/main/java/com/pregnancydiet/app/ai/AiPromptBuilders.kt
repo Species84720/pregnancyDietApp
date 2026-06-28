@@ -45,8 +45,13 @@ class PregnancyAdvicePromptBuilder {
         appendLine("Task: Provide concise pregnancy wellness advice.")
         appendLine("Pregnancy week: ${request.pregnancyWeek ?: "unknown"}; trimester: ${request.trimester ?: "unknown"}.")
         if (request.nutritionTotals.hasAnyNutrition()) {
-            appendLine("Weekly average nutrition context from saved logs: ${request.nutritionTotals.toPromptSummary()}.")
-            appendLine("Return nutritionEstimates as AI-assisted weekly average estimates with value, confidence, and explanation.")
+            if (request.nutritionAlreadyProcessedByAi) {
+                appendLine("Weekly average nutrition context is already based on saved AI nutrition estimates: ${request.nutritionTotals.toPromptSummary()}.")
+                appendLine("Reuse these totals for nutritionEstimates; do not recalculate nutrients from scratch.")
+            } else {
+                appendLine("Weekly average nutrition context from saved logs: ${request.nutritionTotals.toPromptSummary()}.")
+                appendLine("Return nutritionEstimates as AI-assisted weekly average estimates with value, confidence, and explanation.")
+            }
         }
         if (request.nutritionGaps.isNotEmpty()) appendLine("Nutrition gaps: ${request.nutritionGaps.joinToString()}.")
         if (request.redFlagDetected) appendLine("Local app red-flag detected: ${request.redFlagReasons.joinToString()}.")
@@ -63,12 +68,16 @@ class DietPlanPromptBuilder {
         if (request.dietaryRestrictions.isNotEmpty()) appendLine("Respect dietary restrictions: ${request.dietaryRestrictions.joinToString()}.")
         if (request.medicalConditions.isNotEmpty()) appendLine("Consider medical conditions only in general educational terms: ${request.medicalConditions.joinToString()}.")
         if (request.nutritionGaps.isNotEmpty()) appendLine("Focus on food-based support for gaps: ${request.nutritionGaps.joinToString()}.")
-        if (request.foodsToday.isNotEmpty()) {
+        if (request.nutritionAlreadyProcessedByAi) {
+            appendLine("Saved AI nutrition estimates already exist for this date: ${request.nutritionTotals.toPromptSummary()}.")
+            appendLine("Reuse these totals for nutritionEstimates and avoid recalculating nutrients from scratch.")
+        }
+        if (request.foodsToday.isNotEmpty() && !request.nutritionAlreadyProcessedByAi) {
             appendLine("Logged foods today. Estimate nutrition totals from these items:")
             request.foodsToday.take(20).forEach { food ->
                 appendLine("- ${food.foodName}: ${food.quantity} ${food.unit}, weight grams ${food.weightGrams ?: "unknown"}. App fallback estimate for context only: calories ${food.nutrition.caloriesKcal}, protein ${food.nutrition.proteinGrams} g, fiber ${food.nutrition.fiberGrams} g, folate ${food.nutrition.folateMcg} mcg, iron ${food.nutrition.ironMg} mg, calcium ${food.nutrition.calciumMg} mg, vitamin D ${food.nutrition.vitaminDMcg} mcg, B12 ${food.nutrition.vitaminB12Mcg} mcg, iodine ${food.nutrition.iodineMcg} mcg, omega-3 ${food.nutrition.omega3Mg} mg, choline ${food.nutrition.cholineMg} mg.")
             }
-        } else {
+        } else if (request.foodsToday.isEmpty()) {
             appendLine("No foods were logged today; return low-confidence zero estimates and recommend logging meals.")
         }
     }

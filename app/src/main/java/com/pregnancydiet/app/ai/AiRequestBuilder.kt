@@ -30,6 +30,7 @@ class AiRequestBuilder {
         nutritionTotals = nutritionSummary.totals.toAiPayload(),
         nutritionTargets = nutritionSummary.targets.toAiPayload(),
         detectedGaps = nutritionSummary.gaps.map { it.nutrient },
+        nutritionAlreadyProcessedByAi = nutritionSummary.aiNutritionProcessed,
     )
 
     fun symptomExplanation(
@@ -70,6 +71,7 @@ class AiRequestBuilder {
         nutritionTotals = weeklyTrend.averageTotals.toAiPayload(),
         detectedGaps = weeklyTrend.repeatedGaps,
         weeklyRepeatedGaps = weeklyTrend.repeatedGaps,
+        nutritionAlreadyProcessedByAi = weeklyTrend.summaries.isNotEmpty() && weeklyTrend.summaries.all { it.aiNutritionProcessed },
     )
 
     private fun baseRequest(

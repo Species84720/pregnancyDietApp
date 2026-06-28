@@ -34,8 +34,8 @@ android {
         applicationId = "com.pregnancydiet.app"
         minSdk = 23
         targetSdk = 34
-        versionCode = 6
-        versionName = "0.1.5"
+        versionCode = 7
+        versionName = "0.1.6"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         resValue("string", "google_web_client_id", googleWebClientId)
@@ -57,6 +57,7 @@ android {
     }
 
     compileOptions {
+        isCoreLibraryDesugaringEnabled = true
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
@@ -72,6 +73,8 @@ android {
 }
 
 dependencies {
+    coreLibraryDesugaring(libs.android.desugar.jdk.libs)
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.core)
     implementation(libs.androidx.lifecycle.runtime.ktx)
