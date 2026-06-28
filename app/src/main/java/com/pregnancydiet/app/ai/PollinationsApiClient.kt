@@ -22,6 +22,7 @@ import java.util.concurrent.TimeUnit
 
 class PollinationsApiClient(
     private val baseUrl: String = BuildConfig.POLLINATIONS_BASE_URL,
+    private val genBaseUrl: String = BuildConfig.POLLINATIONS_GEN_BASE_URL,
     private val httpClient: OkHttpClient = OkHttpClient.Builder()
         .connectTimeout(15, TimeUnit.SECONDS)
         .readTimeout(45, TimeUnit.SECONDS)
@@ -34,20 +35,20 @@ class PollinationsApiClient(
         credential: AiCredentialResolution,
         model: String? = null,
     ): AiResult<String> {
-        val credentialValue = when (credential) {
+        val requestPlan = when (credential) {
             is AiCredentialResolution.FreeHourlyCredential -> credential.publicKey
             is AiCredentialResolution.UserAccountCredential -> credential.credential
             AiCredentialResolution.MissingFreeHourlyKey -> return AiResult.SetupRequired("Free hourly AI is not configured.")
             AiCredentialResolution.MissingUserCredential -> return AiResult.SetupRequired("Reconnect your Pollinations account or switch to free hourly AI.")
             AiCredentialResolution.InvalidUserCredential -> return AiResult.Unauthorized("Your Pollinations account connection needs to be updated.")
             AiCredentialResolution.UnsafeCredential -> return AiResult.SetupRequired("Unsafe Pollinations credential rejected.")
-        }
-        if (AiCredentialValidator.isUnsafeServerSecret(credentialValue)) {
+        }.toRequestPlan(credential, model)
+        if (AiCredentialValidator.isUnsafeServerSecret(requestPlan.credentialValue)) {
             return AiResult.SetupRequired("Unsafe Pollinations credential rejected.")
         }
 
         val bodyJson = buildJsonObject {
-            put("model", JsonPrimitive(model ?: "openai"))
+            put("model", JsonPrimitive(requestPlan.model))
             put("messages", buildJsonArray {
                 add(buildJsonObject {
                     put("role", JsonPrimitive("user"))
@@ -55,14 +56,18 @@ class PollinationsApiClient(
                 })
             })
             put("temperature", JsonPrimitive(0.2))
+            put("max_tokens", JsonPrimitive(1400))
+            if (requestPlan.includeReasoningEffort) put("reasoning_effort", JsonPrimitive("minimal"))
         }.toString()
 
-        val request = Request.Builder()
-            .url("${baseUrl.trimEnd('/')}/openai")
-            .header("Authorization", "Bearer $credentialValue")
+        val requestBuilder = Request.Builder()
+            .url(requestPlan.url)
             .header("Content-Type", JSON_MEDIA_TYPE.toString())
             .post(bodyJson.toRequestBody(JSON_MEDIA_TYPE))
-            .build()
+        if (requestPlan.sendAuthorizationHeader) {
+            requestBuilder.header("Authorization", "Bearer ${requestPlan.credentialValue}")
+        }
+        val request = requestBuilder.build()
 
         return executeWithRetry(request, attempts = 2)
     }
@@ -90,13 +95,15 @@ class PollinationsApiClient(
                         AiResult.InvalidResponse("AI provider could not process this request.")
                     }
                     401, 403 -> AiResult.Unauthorized("Your Pollinations access needs to be updated.")
+                    402 -> AiResult.QuotaExceeded("Your Pollinations account does not have enough Pollen for this AI request.")
+                    404 -> AiResult.InvalidResponse("The configured Pollinations model is not available.")
                     429 -> AiResult.RateLimited(
                         retryAfterMillis = response.header("Retry-After")?.toRetryAfterMillis()
                             ?: (System.currentTimeMillis() + TimeBuckets.ONE_HOUR_MILLIS),
                         message = "AI usage is currently limited.",
                     )
                     in 500..599 -> AiResult.NetworkError("AI provider is temporarily unavailable.", null)
-                    else -> if (body.contains("quota", ignoreCase = true) || body.contains("credit", ignoreCase = true)) {
+                    else -> if (body.contains("quota", ignoreCase = true) || body.contains("credit", ignoreCase = true) || body.contains("budget", ignoreCase = true) || body.contains("payment", ignoreCase = true)) {
                         AiResult.QuotaExceeded("Your Pollinations allowance may be used up.")
                     } else {
                         AiResult.InvalidResponse("Unexpected AI provider response.")
@@ -132,5 +139,35 @@ class PollinationsApiClient(
 
     private companion object {
         val JSON_MEDIA_TYPE = "application/json".toMediaType()
+        const val LEGACY_FREE_MODEL = "openai-fast"
+        const val LOW_COST_ACCOUNT_MODEL = "nova-fast"
+    }
+
+    private data class PollinationsRequestPlan(
+        val url: String,
+        val model: String,
+        val credentialValue: String,
+        val sendAuthorizationHeader: Boolean,
+        val includeReasoningEffort: Boolean,
+    )
+
+    private fun String.toRequestPlan(
+        credential: AiCredentialResolution,
+        requestedModel: String?,
+    ): PollinationsRequestPlan = when (credential) {
+        is AiCredentialResolution.UserAccountCredential -> PollinationsRequestPlan(
+            url = "${genBaseUrl.trimEnd('/')}/v1/chat/completions",
+            model = requestedModel ?: LOW_COST_ACCOUNT_MODEL,
+            credentialValue = this,
+            sendAuthorizationHeader = true,
+            includeReasoningEffort = false,
+        )
+        else -> PollinationsRequestPlan(
+            url = "${baseUrl.trimEnd('/')}/openai",
+            model = requestedModel ?: LEGACY_FREE_MODEL,
+            credentialValue = this,
+            sendAuthorizationHeader = false,
+            includeReasoningEffort = true,
+        )
     }
 }

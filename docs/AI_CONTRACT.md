@@ -17,6 +17,12 @@ Android App -> Optional Backend/Firebase Function -> Pollinations.ai -> Backend 
 
 ## Pollinations access modes
 
+The app uses the lowest-cost available Pollinations path per access mode:
+
+- Free hourly mode uses the anonymous legacy `text.pollinations.ai/openai` endpoint with `openai-fast` because the current legacy model list does not expose `nova-micro` or `nova-fast`.
+- User/account mode uses the new `gen.pollinations.ai/v1/chat/completions` endpoint with `nova-fast`, the available low-cost Nova text model. If Pollinations adds a documented `nova-micro` text model, the client default can be changed to that model id.
+- If Pollinations returns `402 PAYMENT_REQUIRED` or a budget/pollen error, the app treats it as quota exceeded and shows a safe fallback instead of a parser failure.
+
 ### Free hourly AI
 
 - Uses `POLLINATIONS_PUBLIC_KEY`, a bundled client-safe publishable key expected to start with `pk_`.

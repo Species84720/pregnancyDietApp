@@ -34,13 +34,14 @@ android {
         applicationId = "com.pregnancydiet.app"
         minSdk = 26
         targetSdk = 35
-        versionCode = 2
-        versionName = "0.1.1"
+        versionCode = 3
+        versionName = "0.1.2"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         resValue("string", "google_web_client_id", googleWebClientId)
         buildConfigField("String", "POLLINATIONS_PUBLIC_KEY", "\"$pollinationsPublicKey\"")
         buildConfigField("String", "POLLINATIONS_BASE_URL", "\"https://text.pollinations.ai\"")
+        buildConfigField("String", "POLLINATIONS_GEN_BASE_URL", "\"https://gen.pollinations.ai\"")
     }
 
     buildTypes {
