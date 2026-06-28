@@ -73,6 +73,13 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
+# Local factory runner artifacts
+.factory_session.json
+agent_log.txt
+factory_prompt.txt
+factory_runner.pid
+run_factory_job.sh
+
 # OS files
 .DS_Store
 Thumbs.db

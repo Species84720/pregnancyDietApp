@@ -17,7 +17,7 @@ The app must be built in phases from MVP to final product. Health and pregnancy 
 
 ### Prerequisites
 
-- Android Studio with Android SDK 35 installed
+- Android Studio with Android SDK 35 installed; the app targets SDK 34
 - JDK 17
 - No Firebase secrets are committed. Add environment-specific Firebase configuration only when implementing the Firebase phase.
 
@@ -46,7 +46,7 @@ The nutrition screen generates deterministic daily nutrition summaries from logg
 
 The AI integration supports direct frontend Pollinations access through a provider abstraction without embedding server-only secrets. The default access mode is “Free hourly AI,” which uses a bundled client-safe Pollinations publishable key and local estimated cooldown tracking for the free option, usually about 1 pollen per IP per hour. Users can also connect a Pollinations account or client-safe user key from Settings → AI Usage so AI requests use their own allowance. The app rejects `sk_` server secret keys in frontend code, never stores prompts/responses in usage history, and keeps backend AI access isolated as an optional compatibility provider.
 
-The AI insights screen connects pregnancy profile, symptoms, meals, supplements, and deterministic nutrition summaries into daily, symptom, and weekly AI request flows. Generated output is validated before display, unsafe medical or medication-change advice is suppressed into a fallback, urgent warnings are shown prominently, and summaries are saved into user-scoped Firestore documents such as `dailyNutritionSummaries/{date}.aiSummary`, `symptomLogs/{logId}.aiSummary`, and `weeklySummaries/{weekId}`. AI failures do not block meal, symptom, supplement, or nutrition logging.
+The AI insights screen connects pregnancy profile, symptoms, meals, supplements, and nutrition summaries into daily, symptom, and weekly AI request flows. Generated output is validated before display, unsafe medical or medication-change advice is suppressed into a fallback, urgent warnings are shown prominently, and summaries are saved into user-scoped Firestore documents such as `dailyNutritionSummaries/{date}.aiSummary`, `symptomLogs/{logId}.aiSummary`, `weeklySummaries/{weekId}`, and deterministic log documents in `aiSummaries/{summaryId}`. AI nutrition estimates are stored with `aiNutritionProcessed`, `nutritionProcessedBy`, and `nutritionProcessingStatus` markers, and AI-processed daily or weekly summaries are reused for the same day or week instead of calling AI again. AI failures do not block meal, symptom, supplement, or nutrition logging.
 
 The reminders screen lets users enable or disable optional supplement reminders, one daily meal logging reminder, and one daily symptom check-in reminder. Reminder preferences are stored under `users/{uid}/reminderPreferences/default`, Android notification permission is requested before reminders are enabled, and scheduled notification copy is gentle, non-alarming, and never medical advice.
 

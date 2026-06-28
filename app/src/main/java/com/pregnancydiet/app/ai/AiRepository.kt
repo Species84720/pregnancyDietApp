@@ -50,6 +50,7 @@ private fun AiSummaryRequest.toPregnancyAiRequest(): PregnancyAiRequest = Pregna
     trimester = trimester,
     symptoms = symptomsToday,
     nutritionGaps = detectedGaps.ifEmpty { weeklyRepeatedGaps },
+    nutritionTotals = nutritionTotals,
     redFlagDetected = redFlagDetectedByApp,
     redFlagReasons = redFlagReasons,
 )

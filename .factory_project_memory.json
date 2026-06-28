@@ -1,0 +1,36 @@
+{
+  "persistent_brief": "This is an android application capable of pregnancy diet plan. Were you can give it what you eat and it gives back if you took the right nutrition and other details.",
+  "project_summary": "Android Kotlin/Jetpack Compose pregnancy diet tracker using Firebase Auth and Firestore. The app tracks onboarding/profile data, symptoms, supplements, meals, weight, deterministic nutrition summaries, AI insights, reminders, reports, and settings/privacy controls.",
+  "architecture_notes": [
+    "Layered packages remain split across ui/screens, viewmodels/features, data interfaces, firebase repositories, model classes, nutrition logic, ai provider/request parsing, and safety rules.",
+    "AI insights are generated through the AI repository/provider abstraction, validated by safety guardrails, embedded back into source Firestore documents, and now also logged deterministically under users/{uid}/aiSummaries/{summaryId}.",
+    "Daily and weekly AI insight flows persist AI nutrition estimates to their summary documents with aiNutritionProcessed, nutritionProcessedBy, and nutritionProcessingStatus markers; reusable AI-processed summaries skip repeat provider calls for the same date or ISO week."
+  ],
+  "quality_focus": [
+    "Validated with ANDROID_HOME=/opt/android-sdk ./gradlew :app:testDebugUnitTest --console=plain --no-daemon.",
+    "Validated with ANDROID_HOME=/opt/android-sdk ./gradlew assembleDebug --console=plain --no-daemon.",
+    "Debug APK generated at app/build/outputs/apk/debug/app-debug.apk.",
+    "Baseline validation without ANDROID_HOME still fails because local.properties does not define sdk.dir; use ANDROID_HOME=/opt/android-sdk in this environment."
+  ],
+  "open_followups": [
+    "Consider invalidating or versioning cached daily/weekly AI summaries if users edit meals, symptoms, supplements, or profile inputs after an AI-processed summary has been saved."
+  ],
+  "recent_requests": [
+    {
+      "timestamp": "2026-06-28T17:57:19+00:00",
+      "action": "Update Existing Project",
+      "prompt": "Consider the current code. I noticed that the ai summary is not being saved or logged anywhere. Let's log this to firestore as well for future analysis. Also local analysis of nutrition is not really important. Instead I want you to make the nutrition obtained from the AI saved and identified that it has been processed by the AI. So that it does not need to be processed again if summary is requested again during the day or week."
+    },
+    {
+      "timestamp": "2026-06-28T18:16:55+00:00",
+      "action": "Update Existing Project",
+      "prompt": "Check the code builds and generate the apk and publish it to git."
+    }
+  ],
+  "last_task": {
+    "status": "completed",
+    "action": "Update Existing Project",
+    "updated_at": "2026-06-28T18:17:02+00:00",
+    "log_excerpt": "Recovered git access by adding /root/generatedCode/pregnancydiet as a safe directory, validated unit tests and debug assembly with ANDROID_HOME=/opt/android-sdk, generated app/build/outputs/apk/debug/app-debug.apk, fixed weekly AI summary cache reuse to key by ISO week, and prepared changes for git publish."
+  }
+}

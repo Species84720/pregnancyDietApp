@@ -228,16 +228,49 @@ Document ID should be ISO date, for example `2026-06-25`.
     }
   ],
   "stagePriorities": ["folate", "iodine", "protein", "hydration"],
+  "aiSummaryId": "daily_nutrition_summary_2026-06-25",
   "aiSummary": {
+    "id": "daily_nutrition_summary_2026-06-25",
     "type": "daily_nutrition_summary",
     "summary": "Your intake today appears lower in iron and calcium...",
+    "nutritionEstimates": {
+      "proteinGrams": {
+        "value": 72.5,
+        "confidence": "medium",
+        "explanation": "Estimated from logged foods.",
+        "source": "ai"
+      }
+    },
+    "nutritionEstimateSource": "ai_assisted",
+    "nutritionProcessed": true,
+    "nutritionProcessedBy": "ai",
+    "nutritionProcessingStatus": "ai_processed",
     "urgentWarning": false,
+    "processingStatus": "ai_processed",
+    "processedBy": "ai",
     "disclaimer": "This is educational guidance and does not replace medical advice."
   },
+  "aiNutritionEstimates": {
+    "proteinGrams": {
+      "value": 72.5,
+      "confidence": "medium",
+      "explanation": "Estimated from logged foods.",
+      "source": "ai"
+    }
+  },
+  "aiNutritionTotals": {
+    "proteinGrams": 72.5
+  },
+  "aiNutritionProcessed": true,
+  "nutritionProcessedBy": "ai",
+  "nutritionProcessingStatus": "ai_processed",
+  "nutritionProcessedAt": "timestamp",
   "createdAt": "timestamp",
   "updatedAt": "timestamp"
 }
 ```
+
+When `dailyNutritionSummaries/{date}.aiSummary` exists with `nutritionProcessingStatus: "ai_processed"`, the app reuses it for repeat daily AI insight requests for that date instead of calling the AI provider again. Fallback summaries are logged but are not treated as AI-processed nutrition.
 
 ## users/{uid}/weeklySummaries/{weekId}
 
@@ -251,17 +284,47 @@ Phase 9 stores the displayed weekly AI summary and safe fallback state here.
   "trimester": 1,
   "daysIncluded": 7,
   "repeatedGaps": ["iron", "calcium"],
+  "aiSummaryId": "weekly_summary_2026-W26",
   "aiSummary": {
+    "id": "weekly_summary_2026-W26",
     "type": "weekly_summary",
     "summary": "Educational weekly summary...",
+    "nutritionEstimates": {
+      "proteinGrams": {
+        "value": 66,
+        "confidence": "low",
+        "explanation": "Estimated from saved weekly averages.",
+        "source": "ai"
+      }
+    },
+    "nutritionEstimateSource": "ai_assisted",
+    "nutritionProcessed": true,
+    "nutritionProcessedBy": "ai",
+    "nutritionProcessingStatus": "ai_processed",
     "urgentWarning": false,
     "fallback": false,
+    "processingStatus": "ai_processed",
+    "processedBy": "ai",
     "disclaimer": "This is educational guidance and does not replace medical advice."
   },
+  "aiNutritionEstimates": {
+    "proteinGrams": {
+      "value": 66,
+      "confidence": "low",
+      "explanation": "Estimated from saved weekly averages.",
+      "source": "ai"
+    }
+  },
+  "aiNutritionProcessed": true,
+  "nutritionProcessedBy": "ai",
+  "nutritionProcessingStatus": "ai_processed",
+  "nutritionProcessedAt": "timestamp",
   "createdAt": "timestamp",
   "updatedAt": "timestamp"
 }
 ```
+
+When `weeklySummaries/{weekId}.aiSummary` exists with `nutritionProcessingStatus: "ai_processed"`, the app reuses it for repeat weekly AI summary requests for that ISO week instead of calling the AI provider again.
 
 ## users/{uid}/weeklyNutritionSummaries/{weekId}
 
@@ -293,11 +356,25 @@ Phase 9 stores the displayed weekly AI summary and safe fallback state here.
 
 ```json
 {
-  "type": "daily_nutrition",
+  "type": "daily_nutrition_summary",
+  "analysisDate": "2026-06-25",
+  "analysisWeekId": null,
   "date": "2026-06-25",
   "pregnancyProfileId": "profile_123",
   "inputContextVersion": "ai_context_v1",
   "summary": "Your intake today appears lower in iron and calcium...",
+  "nutritionEstimates": {
+    "proteinGrams": {
+      "value": 72.5,
+      "confidence": "medium",
+      "explanation": "Estimated from logged foods.",
+      "source": "ai"
+    }
+  },
+  "nutritionEstimateSource": "ai_assisted",
+  "nutritionProcessed": true,
+  "nutritionProcessedBy": "ai",
+  "nutritionProcessingStatus": "ai_processed",
   "nutritionGaps": [
     {
       "nutrient": "iron",
@@ -307,10 +384,15 @@ Phase 9 stores the displayed weekly AI summary and safe fallback state here.
   ],
   "symptomGuidance": null,
   "urgentWarning": false,
+  "processingStatus": "ai_processed",
+  "processedBy": "ai",
   "disclaimer": "This is educational guidance and does not replace medical advice.",
-  "createdAt": "timestamp"
+  "loggedAt": "timestamp",
+  "updatedAt": "timestamp"
 }
 ```
+
+AI summary log document IDs are deterministic for repeatable analysis and idempotent writes: `daily_nutrition_summary_{date}`, `weekly_summary_{weekId}`, and `symptom_explanation_{symptomLogId}`.
 
 ## Reports and export reads
 
@@ -364,4 +446,3 @@ service cloud.firestore {
   }
 }
 ```
-

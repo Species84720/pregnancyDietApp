@@ -5,6 +5,7 @@ data class PregnancyAiRequest(
     val trimester: Int?,
     val symptoms: List<AiSymptomContext> = emptyList(),
     val nutritionGaps: List<String> = emptyList(),
+    val nutritionTotals: AiNutrientPayload = AiNutrientPayload(),
     val redFlagDetected: Boolean = false,
     val redFlagReasons: List<String> = emptyList(),
 )

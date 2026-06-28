@@ -41,19 +41,19 @@ class AiSummaryViewModel(
     fun generateDailyInsight(uid: String) = generate(
         uid = uid,
         action = AiSummaryAction.DailyInsight,
-        successMessage = "Daily insight generated and saved.",
+        successMessage = "Daily insight ready and saved.",
     ) { userId, date -> repository.generateDailyInsight(userId, date) }
 
     fun generateSymptomGuidance(uid: String) = generate(
         uid = uid,
         action = AiSummaryAction.SymptomGuidance,
-        successMessage = "Symptom guidance generated and saved.",
+        successMessage = "Symptom guidance ready and saved.",
     ) { userId, date -> repository.generateSymptomGuidance(userId, date) }
 
     fun generateWeeklySummary(uid: String) = generate(
         uid = uid,
         action = AiSummaryAction.WeeklySummary,
-        successMessage = "Weekly summary generated and saved.",
+        successMessage = "Weekly summary ready and saved.",
     ) { userId, date -> repository.generateWeeklySummary(userId, date) }
 
     private fun generate(

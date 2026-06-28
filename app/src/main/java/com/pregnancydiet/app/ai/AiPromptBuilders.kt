@@ -4,10 +4,10 @@ private const val JSON_RESPONSE_INSTRUCTIONS = """
 Return strict JSON only. Do not include markdown fences, headings, bullets, or any extra text. Use this schema: {
   "summary": "short educational summary",
   "stageContext": "pregnancy week or trimester context",
-    "nutritionEstimates": {},
+  "nutritionEstimates": {},
   "nutritionGaps": [],
-    "recommendations": [],
-    "safetyWarnings": [],
+  "recommendations": [],
+  "safetyWarnings": [],
   "symptomGuidance": null,
   "weightContext": null,
   "urgentWarning": false,
@@ -15,6 +15,7 @@ Return strict JSON only. Do not include markdown fences, headings, bullets, or a
   "nextSteps": ["What to do now", "When to contact your clinician"],
   "disclaimer": "This is educational guidance and does not replace medical advice."
 }
+When nutrition context is provided, include AI-assisted nutritionEstimates using these keys where possible: caloriesKcal, proteinGrams, carbsGrams, fatGrams, fiberGrams, folateMcg, ironMg, calciumMg, vitaminDMcg, vitaminB12Mcg, iodineMcg, omega3Mg, cholineMg, waterMl.
 """
 
 private const val DAILY_NUTRITION_JSON_RESPONSE_INSTRUCTIONS = """
@@ -43,6 +44,10 @@ class PregnancyAdvicePromptBuilder {
         appendLine(JSON_RESPONSE_INSTRUCTIONS)
         appendLine("Task: Provide concise pregnancy wellness advice.")
         appendLine("Pregnancy week: ${request.pregnancyWeek ?: "unknown"}; trimester: ${request.trimester ?: "unknown"}.")
+        if (request.nutritionTotals.hasAnyNutrition()) {
+            appendLine("Weekly average nutrition context from saved logs: ${request.nutritionTotals.toPromptSummary()}.")
+            appendLine("Return nutritionEstimates as AI-assisted weekly average estimates with value, confidence, and explanation.")
+        }
         if (request.nutritionGaps.isNotEmpty()) appendLine("Nutrition gaps: ${request.nutritionGaps.joinToString()}.")
         if (request.redFlagDetected) appendLine("Local app red-flag detected: ${request.redFlagReasons.joinToString()}.")
     }
@@ -61,13 +66,46 @@ class DietPlanPromptBuilder {
         if (request.foodsToday.isNotEmpty()) {
             appendLine("Logged foods today. Estimate nutrition totals from these items:")
             request.foodsToday.take(20).forEach { food ->
-                appendLine("- ${food.foodName}: ${food.quantity} ${food.unit}, weight grams ${food.weightGrams ?: "unknown"}, local estimate calories ${food.nutrition.caloriesKcal}, protein ${food.nutrition.proteinGrams} g, fiber ${food.nutrition.fiberGrams} g, folate ${food.nutrition.folateMcg} mcg, iron ${food.nutrition.ironMg} mg, calcium ${food.nutrition.calciumMg} mg, vitamin D ${food.nutrition.vitaminDMcg} mcg, B12 ${food.nutrition.vitaminB12Mcg} mcg, iodine ${food.nutrition.iodineMcg} mcg, omega-3 ${food.nutrition.omega3Mg} mg, choline ${food.nutrition.cholineMg} mg.")
+                appendLine("- ${food.foodName}: ${food.quantity} ${food.unit}, weight grams ${food.weightGrams ?: "unknown"}. App fallback estimate for context only: calories ${food.nutrition.caloriesKcal}, protein ${food.nutrition.proteinGrams} g, fiber ${food.nutrition.fiberGrams} g, folate ${food.nutrition.folateMcg} mcg, iron ${food.nutrition.ironMg} mg, calcium ${food.nutrition.calciumMg} mg, vitamin D ${food.nutrition.vitaminDMcg} mcg, B12 ${food.nutrition.vitaminB12Mcg} mcg, iodine ${food.nutrition.iodineMcg} mcg, omega-3 ${food.nutrition.omega3Mg} mg, choline ${food.nutrition.cholineMg} mg.")
             }
         } else {
             appendLine("No foods were logged today; return low-confidence zero estimates and recommend logging meals.")
         }
     }
 }
+
+private fun AiNutrientPayload.hasAnyNutrition(): Boolean = listOf(
+    calories,
+    caloriesKcal,
+    proteinGrams,
+    carbsGrams,
+    fatGrams,
+    fiberGrams,
+    folateMcg,
+    ironMg,
+    calciumMg,
+    vitaminDMcg,
+    vitaminB12Mcg,
+    iodineMcg,
+    omega3Mg,
+    cholineMg,
+    waterMl,
+).any { it > 0.0 }
+
+private fun AiNutrientPayload.toPromptSummary(): String = listOf(
+    "caloriesKcal=$caloriesKcal",
+    "proteinGrams=$proteinGrams",
+    "fiberGrams=$fiberGrams",
+    "folateMcg=$folateMcg",
+    "ironMg=$ironMg",
+    "calciumMg=$calciumMg",
+    "vitaminDMcg=$vitaminDMcg",
+    "vitaminB12Mcg=$vitaminB12Mcg",
+    "iodineMcg=$iodineMcg",
+    "omega3Mg=$omega3Mg",
+    "cholineMg=$cholineMg",
+    "waterMl=$waterMl",
+).joinToString()
 
 class SymptomAnalysisPromptBuilder {
     fun build(request: SymptomAiRequest): String = buildString {
