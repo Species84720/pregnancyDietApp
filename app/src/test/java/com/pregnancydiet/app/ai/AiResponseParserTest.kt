@@ -155,6 +155,28 @@ class AiResponseParserTest {
     }
 
     @Test
+    fun `nutrition estimates array with keys converts to estimate objects`() {
+        val result = parser.parse(
+            validJson(
+                nutritionEstimatesJson = """
+                    [
+                      { "key": "proteinGrams", "value": 72.5, "confidence": "medium", "explanation": "Estimated from logged protein foods." },
+                      { "key": "ironMg", "value": 10, "confidence": "medium", "explanation": "Estimated from eggs and lentils." }
+                    ]
+                """.trimIndent(),
+            ),
+            baseRequest(),
+        )
+
+        assertTrue(result is AiSummaryResult.Success)
+        val response = (result as AiSummaryResult.Success).response
+        assertEquals(72.5, response.nutritionEstimates.proteinGrams.value, 0.001)
+        assertEquals("medium", response.nutritionEstimates.proteinGrams.confidence)
+        assertEquals(10.0, response.nutritionEstimates.ironMg.value, 0.001)
+        assertEquals(AiNutritionEstimateSource.MixedAiLocal, response.nutritionEstimateSource)
+    }
+
+    @Test
     fun `response wrapped in markdown fences parses`() {
         val result = parser.parse(
             rawResponse = """

@@ -83,4 +83,19 @@ class AiUsageRepositoryTest {
 
         assertEquals(UserAccountStatus.INVALID, repository.getUsageState().userAccountStatus)
     }
+
+    @Test
+    fun `stale setup required status does not block configured free hourly mode`() = runBlocking {
+        val repository = InMemoryAiUsageRepository(
+            AiUsageState(
+                selectedAccessMode = AiAccessMode.FREE_HOURLY,
+                lastStatus = AiUsageStatus.SETUP_REQUIRED,
+                lastErrorMessage = "Free hourly AI was not configured.",
+            ),
+        )
+
+        val availability = repository.canUseAi(AiFeature.DIET_PLAN)
+
+        assertTrue(availability is AiAvailability.Available)
+    }
 }

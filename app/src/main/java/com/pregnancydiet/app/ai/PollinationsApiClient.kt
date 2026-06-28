@@ -47,23 +47,12 @@ class PollinationsApiClient(
             return AiResult.SetupRequired("Unsafe Pollinations credential rejected.")
         }
 
-        val bodyJson = buildJsonObject {
-            put("model", JsonPrimitive(requestPlan.model))
-            put("messages", buildJsonArray {
-                add(buildJsonObject {
-                    put("role", JsonPrimitive("user"))
-                    put("content", JsonPrimitive(prompt))
-                })
-            })
-            put("temperature", JsonPrimitive(0.2))
-            put("max_tokens", JsonPrimitive(1400))
-            if (requestPlan.includeReasoningEffort) put("reasoning_effort", JsonPrimitive("minimal"))
-        }.toString()
-
-        val requestBuilder = Request.Builder()
-            .url(requestPlan.url)
-            .header("Content-Type", JSON_MEDIA_TYPE.toString())
-            .post(bodyJson.toRequestBody(JSON_MEDIA_TYPE))
+        val requestBuilder = Request.Builder().url(requestPlan.url(prompt))
+        if (requestPlan.method == PollinationsRequestMethod.POST) {
+            requestBuilder
+                .header("Content-Type", JSON_MEDIA_TYPE.toString())
+                .post(requestPlan.bodyJson(prompt).toRequestBody(JSON_MEDIA_TYPE))
+        }
         if (requestPlan.sendAuthorizationHeader) {
             requestBuilder.header("Authorization", "Bearer ${requestPlan.credentialValue}")
         }
@@ -144,30 +133,53 @@ class PollinationsApiClient(
     }
 
     private data class PollinationsRequestPlan(
-        val url: String,
+        val baseUrl: String,
         val model: String,
         val credentialValue: String,
         val sendAuthorizationHeader: Boolean,
         val includeReasoningEffort: Boolean,
+        val method: PollinationsRequestMethod,
     )
+
+    private enum class PollinationsRequestMethod { GET, POST }
 
     private fun String.toRequestPlan(
         credential: AiCredentialResolution,
         requestedModel: String?,
     ): PollinationsRequestPlan = when (credential) {
         is AiCredentialResolution.UserAccountCredential -> PollinationsRequestPlan(
-            url = "${genBaseUrl.trimEnd('/')}/v1/chat/completions",
+            baseUrl = "${genBaseUrl.trimEnd('/')}/v1/chat/completions",
             model = requestedModel ?: LOW_COST_ACCOUNT_MODEL,
             credentialValue = this,
             sendAuthorizationHeader = true,
             includeReasoningEffort = false,
+            method = PollinationsRequestMethod.POST,
         )
         else -> PollinationsRequestPlan(
-            url = "${baseUrl.trimEnd('/')}/openai",
+            baseUrl = "${baseUrl.trimEnd('/')}/openai",
             model = requestedModel ?: LEGACY_FREE_MODEL,
             credentialValue = this,
             sendAuthorizationHeader = false,
             includeReasoningEffort = true,
+            method = PollinationsRequestMethod.POST,
         )
     }
+
+    private fun PollinationsRequestPlan.url(prompt: String): String = when (method) {
+        PollinationsRequestMethod.POST -> baseUrl
+        PollinationsRequestMethod.GET -> baseUrl
+    }
+
+    private fun PollinationsRequestPlan.bodyJson(prompt: String): String = buildJsonObject {
+        put("model", JsonPrimitive(model))
+        put("messages", buildJsonArray {
+            add(buildJsonObject {
+                put("role", JsonPrimitive("user"))
+                put("content", JsonPrimitive(prompt))
+            })
+        })
+        put("temperature", JsonPrimitive(0.2))
+        put("max_tokens", JsonPrimitive(3500))
+        if (includeReasoningEffort) put("reasoning_effort", JsonPrimitive("low"))
+    }.toString()
 }

@@ -19,7 +19,7 @@ Android App -> Optional Backend/Firebase Function -> Pollinations.ai -> Backend 
 
 The app uses the lowest-cost available Pollinations path per access mode:
 
-- Free hourly mode uses the anonymous legacy `text.pollinations.ai/openai` endpoint with `openai-fast` because the current legacy model list does not expose `nova-micro` or `nova-fast`.
+- Free hourly mode uses the anonymous legacy `POST text.pollinations.ai/openai` endpoint with `openai-fast`, no authorization header, and `reasoning_effort = low`. Direct testing showed `reasoning_effort = minimal` fails with a provider validation error, while `low` returns final JSON content for daily nutrition prompts. The current legacy model list does not expose `nova-micro` or `nova-fast`.
 - User/account mode uses the new `gen.pollinations.ai/v1/chat/completions` endpoint with `nova-fast`, the available low-cost Nova text model. If Pollinations adds a documented `nova-micro` text model, the client default can be changed to that model id.
 - If Pollinations returns `402 PAYMENT_REQUIRED` or a budget/pollen error, the app treats it as quota exceeded and shows a safe fallback instead of a parser failure.
 

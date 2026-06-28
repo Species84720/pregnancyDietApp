@@ -74,7 +74,7 @@ class PollinationsApiClientTest {
     }
 
     @Test
-    fun `free hourly uses anonymous legacy openai fast`() = runBlocking {
+    fun `free hourly uses anonymous legacy openai fast post with low reasoning`() = runBlocking {
         val capturedRequest = AtomicReference<Request>()
         val client = clientForCapturing(
             code = 200,
@@ -86,10 +86,11 @@ class PollinationsApiClientTest {
 
         assertTrue(result is AiResult.Success)
         val request = capturedRequest.get()
+        assertEquals("POST", request.method)
         assertEquals("https://example.test/openai", request.url.toString())
         assertNull(request.header("Authorization"))
         assertTrue(requestBody(request).contains("\"model\":\"openai-fast\""))
-        assertTrue(requestBody(request).contains("\"reasoning_effort\":\"minimal\""))
+        assertTrue(requestBody(request).contains("\"reasoning_effort\":\"low\""))
     }
 
     @Test
@@ -105,6 +106,7 @@ class PollinationsApiClientTest {
 
         assertTrue(result is AiResult.Success)
         val request = capturedRequest.get()
+        assertEquals("POST", request.method)
         assertEquals("https://gen.example.test/v1/chat/completions", request.url.toString())
         assertEquals("Bearer pk_user_with_budget", request.header("Authorization"))
         assertTrue(requestBody(request).contains("\"model\":\"nova-fast\""))

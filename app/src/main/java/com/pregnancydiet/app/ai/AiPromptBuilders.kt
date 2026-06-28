@@ -18,52 +18,16 @@ Return strict JSON only. Do not include markdown fences, headings, bullets, or a
 """
 
 private const val DAILY_NUTRITION_JSON_RESPONSE_INSTRUCTIONS = """
-Return strict JSON only. Do not include markdown fences, headings, bullets, commentary, or any extra text.
+Return ONLY compact strict JSON. Do not include markdown fences, headings, bullets, reasoning, commentary, or extra text.
 This is pregnancy nutrition support for education and tracking only, not medical diagnosis or treatment.
 The response must include: summary, nutritionEstimates, nutritionGaps, recommendations, safetyWarnings, nextSteps, and disclaimer.
-Every nutritionGaps item must include nutrientKey, displayName, status, explanation, foodSuggestions, and safetyNote. Do not omit status or explanation.
-Every nutritionEstimates item must be an object with value, confidence, and explanation.
+Every nutritionGaps item must include nutrientKey, displayName, status, explanation, foodSuggestions, and safetyNote.
+Every nutritionEstimates item must be an object with value, confidence, and explanation. Prefer an object keyed by nutrient name, but an array with key/value/confidence/explanation is acceptable.
 Use these nutritionEstimates keys exactly: caloriesKcal, proteinGrams, carbsGrams, fatGrams, fiberGrams, folateMcg, ironMg, calciumMg, vitaminDMcg, vitaminB12Mcg, iodineMcg, omega3Mg, cholineMg, waterMl.
-Estimate totals from the logged foods. If a value is uncertain, use confidence "low" and explain briefly.
+Estimate totals from logged foods. Keep explanations under 12 words. If uncertain, use confidence "low".
 Do not recommend changing prescribed supplements or medication; say to contact a gynecologist for medical concerns or supplement changes.
 
-Example JSON response:
-{
-    "summary": "Based on the foods logged today, your meals include protein and calcium sources, with a few nutrients that may need attention.",
-    "stageContext": "Pregnancy nutrition needs vary by week and trimester.",
-    "nutritionEstimates": {
-        "caloriesKcal": { "value": 1850, "confidence": "medium", "explanation": "Estimated from the logged meals and portions." },
-        "proteinGrams": { "value": 72.5, "confidence": "medium", "explanation": "Estimated from eggs, yogurt, chicken, and lentils logged today." },
-        "carbsGrams": { "value": 210, "confidence": "low", "explanation": "Estimated from grains, fruit, dairy, and legumes." },
-        "fatGrams": { "value": 65, "confidence": "low", "explanation": "Estimated from dairy, eggs, oils, nuts, and animal foods if logged." },
-        "fiberGrams": { "value": 26, "confidence": "medium", "explanation": "Estimated from vegetables, fruit, and legumes." },
-        "folateMcg": { "value": 450, "confidence": "low", "explanation": "Estimated from greens, legumes, and fortified foods if logged." },
-        "ironMg": { "value": 15, "confidence": "low", "explanation": "Estimated from meats, legumes, eggs, greens, and fortified foods." },
-        "calciumMg": { "value": 900, "confidence": "medium", "explanation": "Estimated from dairy or calcium-rich foods logged today." },
-        "vitaminDMcg": { "value": 6, "confidence": "low", "explanation": "Food-based vitamin D estimates are approximate." },
-        "vitaminB12Mcg": { "value": 2.4, "confidence": "low", "explanation": "Estimated from animal foods or fortified foods if logged." },
-        "iodineMcg": { "value": 120, "confidence": "low", "explanation": "Estimated from dairy, eggs, seafood, or iodized salt if evident." },
-        "omega3Mg": { "value": 300, "confidence": "low", "explanation": "Estimated from fish, eggs, walnuts, chia, or flax if logged." },
-        "cholineMg": { "value": 360, "confidence": "low", "explanation": "Estimated from eggs, meat, fish, dairy, and legumes." },
-        "waterMl": { "value": 1800, "confidence": "low", "explanation": "Estimated only from logged drinks or water entries." }
-    },
-    "nutritionGaps": [
-        {
-            "nutrientKey": "ironMg",
-            "displayName": "Iron",
-            "status": "low",
-            "explanation": "Iron may need attention based on today's logged foods and pregnancy nutrition needs.",
-            "foodSuggestions": ["lentils", "beans", "lean meat"],
-            "safetyNote": "For medical concerns or supplement changes, contact your gynecologist."
-        }
-    ],
-    "recommendations": ["Add a food-based iron source with vitamin C if it fits your plan."],
-    "safetyWarnings": ["This is educational guidance and does not replace medical advice."],
-    "urgentWarning": false,
-    "urgentReasons": [],
-    "nextSteps": ["Review persistent gaps with your care team."],
-    "disclaimer": "This app provides educational guidance and does not replace medical advice."
-}
+Example: {"summary":"Logged foods provide protein but some nutrients may need attention.","nutritionEstimates":{"proteinGrams":{"value":72.5,"confidence":"medium","explanation":"Estimated from logged foods."}},"nutritionGaps":[{"nutrientKey":"ironMg","displayName":"Iron","status":"low","explanation":"Iron may need attention today.","foodSuggestions":["lentils","beans"],"safetyNote":"For medical concerns or supplement changes, contact your gynecologist."}],"recommendations":["Add food-based iron if appropriate."],"safetyWarnings":["Educational guidance only."],"nextSteps":["Discuss persistent gaps with your care team."],"disclaimer":"This app provides educational guidance and does not replace medical advice."}
 """
 
 private const val SAFETY_GUARDRAILS = """

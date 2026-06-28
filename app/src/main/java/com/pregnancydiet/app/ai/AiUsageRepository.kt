@@ -117,7 +117,6 @@ open class InMemoryAiUsageRepository(
         val current = state.value.copy(selectedAccessMode = mode, usingUserAccount = mode == AiAccessMode.USER_ACCOUNT)
         state.value = current
         return when {
-            current.lastStatus == AiUsageStatus.SETUP_REQUIRED -> AiAvailability.SetupRequired(current.lastErrorMessage ?: "AI setup is required.")
             mode == AiAccessMode.USER_ACCOUNT && current.userAccountStatus == UserAccountStatus.INVALID -> AiAvailability.AccountInvalid("Your Pollinations account connection needs to be updated.")
             mode == AiAccessMode.USER_ACCOUNT && current.userAccountStatus == UserAccountStatus.QUOTA_EXCEEDED -> AiAvailability.QuotaExceeded("Your Pollinations account appears to be out of allowance or rate limited.")
             mode == AiAccessMode.FREE_HOURLY && current.nextEstimatedFreeRequestAtMillis?.let { it > now } == true -> AiAvailability.CoolingDown(

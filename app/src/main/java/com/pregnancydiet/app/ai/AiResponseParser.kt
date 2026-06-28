@@ -54,7 +54,7 @@ class AiResponseParser(
         val summary = string("summary").takeIf { it.isNotBlank() }
             ?: throw IllegalArgumentException("AI response did not include a summary.")
         val mergeResult = AiNutritionEstimateMerger.merge(
-            aiEstimates = (this["nutritionEstimates"] as? JsonObject).toAiEstimateMap(),
+            aiEstimates = this["nutritionEstimates"].toAiEstimateMap(),
             localTotals = request.nutritionTotals,
         )
         val recommendations = stringList("recommendations")
@@ -83,12 +83,24 @@ class AiResponseParser(
         json.decodeFromJsonElement<T>(element)
     }.getOrNull()
 
-    private fun JsonObject?.toAiEstimateMap(): Map<String, AiNutritionEstimate> {
-        if (this == null) return emptyMap()
-        return AiNutritionEstimateMerger.fieldKeys.mapNotNull { key ->
-            val element = this[key]?.takeUnless { it is JsonNull } ?: return@mapNotNull null
-            key to element.toAiEstimate()
-        }.toMap()
+    private fun JsonElement?.toAiEstimateMap(): Map<String, AiNutritionEstimate> {
+        if (this == null || this is JsonNull) return emptyMap()
+        return when (this) {
+            is JsonObject -> AiNutritionEstimateMerger.fieldKeys.mapNotNull { key ->
+                val element = this[key]?.takeUnless { it is JsonNull } ?: return@mapNotNull null
+                key to element.toAiEstimate()
+            }.toMap()
+            is JsonArray -> mapNotNull { element ->
+                val item = element as? JsonObject ?: return@mapNotNull null
+                val key = item.string("key")
+                    .ifBlank { item.string("nutrientKey") }
+                    .ifBlank { item.string("name") }
+                    .takeIf { it in AiNutritionEstimateMerger.fieldKeys }
+                    ?: return@mapNotNull null
+                key to item.toAiEstimate()
+            }.toMap()
+            else -> emptyMap()
+        }
     }
 
     private fun JsonElement.toAiEstimate(): AiNutritionEstimate = when (this) {
