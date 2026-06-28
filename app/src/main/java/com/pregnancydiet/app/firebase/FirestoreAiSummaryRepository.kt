@@ -5,6 +5,8 @@ import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.SetOptions
 import com.pregnancydiet.app.ai.AiNutritionGapGuidance
+import com.pregnancydiet.app.ai.AiNutritionEstimate
+import com.pregnancydiet.app.ai.AiNutritionEstimates
 import com.pregnancydiet.app.ai.AiRepository
 import com.pregnancydiet.app.ai.AiRequestBuilder
 import com.pregnancydiet.app.ai.AiSummaryRecord
@@ -264,7 +266,12 @@ private fun AiSummaryRecord.toFirestoreMap(): Map<String, Any?> = mapOf(
     "inputContextVersion" to inputContextVersion,
     "summary" to summary,
     "stageContext" to stageContext,
+    "nutritionEstimates" to nutritionEstimates.toFirestoreMap(),
+    "nutritionEstimateSource" to nutritionEstimateSource.wireValue,
+    "nutritionEstimateNote" to nutritionEstimateNote,
     "nutritionGaps" to nutritionGaps.map { it.toFirestoreMap() },
+    "recommendations" to recommendations,
+    "safetyWarnings" to safetyWarnings,
     "symptomGuidance" to symptomGuidance?.toFirestoreMap(),
     "weightContext" to weightContext?.toFirestoreMap(),
     "urgentWarning" to urgentWarning,
@@ -278,10 +285,36 @@ private fun AiSummaryRecord.toFirestoreMap(): Map<String, Any?> = mapOf(
 
 private fun AiNutritionGapGuidance.toFirestoreMap(): Map<String, Any?> = mapOf(
     "nutrient" to nutrient,
+    "nutrientKey" to nutrientKey,
+    "displayName" to displayName,
     "status" to status,
     "explanation" to explanation,
     "foodSuggestions" to foodSuggestions,
     "safetyNote" to safetyNote,
+)
+
+private fun AiNutritionEstimates.toFirestoreMap(): Map<String, Any?> = mapOf(
+    "caloriesKcal" to caloriesKcal.toFirestoreMap(),
+    "proteinGrams" to proteinGrams.toFirestoreMap(),
+    "carbsGrams" to carbsGrams.toFirestoreMap(),
+    "fatGrams" to fatGrams.toFirestoreMap(),
+    "fiberGrams" to fiberGrams.toFirestoreMap(),
+    "folateMcg" to folateMcg.toFirestoreMap(),
+    "ironMg" to ironMg.toFirestoreMap(),
+    "calciumMg" to calciumMg.toFirestoreMap(),
+    "vitaminDMcg" to vitaminDMcg.toFirestoreMap(),
+    "vitaminB12Mcg" to vitaminB12Mcg.toFirestoreMap(),
+    "iodineMcg" to iodineMcg.toFirestoreMap(),
+    "omega3Mg" to omega3Mg.toFirestoreMap(),
+    "cholineMg" to cholineMg.toFirestoreMap(),
+    "waterMl" to waterMl.toFirestoreMap(),
+)
+
+private fun AiNutritionEstimate.toFirestoreMap(): Map<String, Any?> = mapOf(
+    "value" to value,
+    "confidence" to confidence,
+    "explanation" to explanation,
+    "source" to source,
 )
 
 private fun AiSymptomGuidance.toFirestoreMap(): Map<String, Any?> = mapOf(

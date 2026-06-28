@@ -72,7 +72,10 @@ data class AiSupplementContext(
 @Serializable
 data class AiNutrientPayload(
     val calories: Double = 0.0,
+    val caloriesKcal: Double = calories,
     val proteinGrams: Double = 0.0,
+    val carbsGrams: Double = 0.0,
+    val fatGrams: Double = 0.0,
     val fiberGrams: Double = 0.0,
     val folateMcg: Double = 0.0,
     val ironMg: Double = 0.0,
@@ -89,7 +92,12 @@ data class AiNutrientPayload(
 data class AiSummaryResponse(
     val summary: String = "",
     val stageContext: String = "",
+    val nutritionEstimates: AiNutritionEstimates = AiNutritionEstimates(),
+    val nutritionEstimateSource: AiNutritionEstimateSource = AiNutritionEstimateSource.LocalFallback,
+    val nutritionEstimateNote: String = "",
     val nutritionGaps: List<AiNutritionGapGuidance> = emptyList(),
+    val recommendations: List<String> = emptyList(),
+    val safetyWarnings: List<String> = emptyList(),
     val symptomGuidance: AiSymptomGuidance? = null,
     val weightContext: AiWeightContext? = null,
     val urgentWarning: Boolean = false,
@@ -100,12 +108,54 @@ data class AiSummaryResponse(
 
 @Serializable
 data class AiNutritionGapGuidance(
-    val nutrient: String,
-    val status: String,
-    val explanation: String,
+    val nutrientKey: String = "unknown",
+    val displayName: String = nutrientKey,
+    val status: String = "unknown",
+    val explanation: String = GENERIC_NUTRITION_GAP_EXPLANATION,
     val foodSuggestions: List<String> = emptyList(),
-    val safetyNote: String = "",
+    val safetyNote: String = DEFAULT_NUTRITION_GAP_SAFETY_NOTE,
+) {
+    val nutrient: String
+        get() = displayName.ifBlank { nutrientKey.ifBlank { "Nutrient" } }
+}
+
+@Serializable
+data class AiNutritionEstimate(
+    val value: Double = 0.0,
+    val confidence: String = "low",
+    val explanation: String = DEFAULT_AI_ESTIMATE_EXPLANATION,
+    val source: String = "ai",
 )
+
+@Serializable
+data class AiNutritionEstimates(
+    val caloriesKcal: AiNutritionEstimate = AiNutritionEstimate(),
+    val proteinGrams: AiNutritionEstimate = AiNutritionEstimate(),
+    val carbsGrams: AiNutritionEstimate = AiNutritionEstimate(),
+    val fatGrams: AiNutritionEstimate = AiNutritionEstimate(),
+    val fiberGrams: AiNutritionEstimate = AiNutritionEstimate(),
+    val folateMcg: AiNutritionEstimate = AiNutritionEstimate(),
+    val ironMg: AiNutritionEstimate = AiNutritionEstimate(),
+    val calciumMg: AiNutritionEstimate = AiNutritionEstimate(),
+    val vitaminDMcg: AiNutritionEstimate = AiNutritionEstimate(),
+    val vitaminB12Mcg: AiNutritionEstimate = AiNutritionEstimate(),
+    val iodineMcg: AiNutritionEstimate = AiNutritionEstimate(),
+    val omega3Mg: AiNutritionEstimate = AiNutritionEstimate(),
+    val cholineMg: AiNutritionEstimate = AiNutritionEstimate(),
+    val waterMl: AiNutritionEstimate = AiNutritionEstimate(),
+)
+
+@Serializable
+enum class AiNutritionEstimateSource(val label: String, val wireValue: String) {
+    @SerialName("ai_assisted")
+    AiAssisted("AI-assisted estimate", "ai_assisted"),
+
+    @SerialName("local_fallback")
+    LocalFallback("Local fallback estimate", "local_fallback"),
+
+    @SerialName("mixed_ai_local")
+    MixedAiLocal("Mixed AI/local estimate", "mixed_ai_local"),
+}
 
 @Serializable
 data class AiSymptomGuidance(
@@ -133,3 +183,8 @@ sealed class AiSummaryResult {
     data class Success(val response: AiSummaryResponse) : AiSummaryResult()
     data class Fallback(val fallback: AiFallbackSummary, val reason: String) : AiSummaryResult()
 }
+
+const val GENERIC_NUTRITION_GAP_EXPLANATION = "This nutrient may need attention based on today's logged foods and pregnancy nutrition needs."
+const val DEFAULT_NUTRITION_GAP_SAFETY_NOTE = "For medical concerns or supplement changes, contact your gynecologist."
+const val DEFAULT_AI_ESTIMATE_EXPLANATION = "Estimated by AI from logged food data."
+const val DEFAULT_LOCAL_ESTIMATE_EXPLANATION = "Estimated locally from logged food data."

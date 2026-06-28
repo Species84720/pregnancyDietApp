@@ -139,6 +139,7 @@ private fun List<SupplementWithTodayStatus>.toAiSupplements(): List<AiSupplement
 
 private fun FoodNutrition.toAiPayload(): AiNutrientPayload = AiNutrientPayload(
     calories = calories,
+    caloriesKcal = calories,
     proteinGrams = proteinGrams,
     fiberGrams = fiberGrams,
     folateMcg = folateMcg,
@@ -153,6 +154,7 @@ private fun FoodNutrition.toAiPayload(): AiNutrientPayload = AiNutrientPayload(
 
 private fun NutrientAmounts.toAiPayload(): AiNutrientPayload = AiNutrientPayload(
     calories = calories,
+    caloriesKcal = calories,
     proteinGrams = proteinGrams,
     fiberGrams = fiberGrams,
     folateMcg = folateMcg,

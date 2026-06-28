@@ -55,6 +55,8 @@ object AiSafetyValidator {
     private fun AiSummaryResponse.displayedText(): String = buildString {
         appendLine(summary)
         appendLine(stageContext)
+        appendLine(nutritionEstimateNote)
+        appendLine(nutritionEstimates.displayedText())
         nutritionGaps.forEach { gap ->
             appendLine(gap.nutrient)
             appendLine(gap.status)
@@ -69,8 +71,29 @@ object AiSafetyValidator {
             appendLine(guidance.contactDoctorIf.joinToString(" "))
         }
         weightContext?.let { context -> appendLine(context.summary) }
+        appendLine(recommendations.joinToString(" "))
+        appendLine(safetyWarnings.joinToString(" "))
         appendLine(urgentReasons.joinToString(" "))
         appendLine(nextSteps.joinToString(" "))
         appendLine(disclaimer)
+    }
+
+    private fun AiNutritionEstimates.displayedText(): String = listOf(
+        caloriesKcal,
+        proteinGrams,
+        carbsGrams,
+        fatGrams,
+        fiberGrams,
+        folateMcg,
+        ironMg,
+        calciumMg,
+        vitaminDMcg,
+        vitaminB12Mcg,
+        iodineMcg,
+        omega3Mg,
+        cholineMg,
+        waterMl,
+    ).joinToString(" ") { estimate ->
+        "${estimate.confidence} ${estimate.explanation} ${estimate.source}"
     }
 }

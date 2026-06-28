@@ -183,7 +183,7 @@ private fun MealContent(
             onDeleteMeal = onDeleteMeal,
         )
         Text(
-            text = "Nutrition values shown here are simple local estimates until the full nutrition engine is implemented.",
+            text = "Nutrition values are estimates based on your logged foods. AI-assisted estimates may be approximate and should not replace medical advice.",
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )

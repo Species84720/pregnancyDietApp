@@ -11,7 +11,12 @@ data class AiSummaryRecord(
     val inputContextVersion: String = AiPromptGuardrails.INPUT_CONTEXT_VERSION,
     val summary: String,
     val stageContext: String = "",
+    val nutritionEstimates: AiNutritionEstimates = AiNutritionEstimates(),
+    val nutritionEstimateSource: AiNutritionEstimateSource = AiNutritionEstimateSource.LocalFallback,
+    val nutritionEstimateNote: String = "",
     val nutritionGaps: List<AiNutritionGapGuidance> = emptyList(),
+    val recommendations: List<String> = emptyList(),
+    val safetyWarnings: List<String> = emptyList(),
     val symptomGuidance: AiSymptomGuidance? = null,
     val weightContext: AiWeightContext? = null,
     val urgentWarning: Boolean = false,
@@ -51,7 +56,12 @@ object AiSummaryRecordFactory {
         inputContextVersion = request.inputContextVersion,
         summary = summary,
         stageContext = stageContext,
+        nutritionEstimates = nutritionEstimates,
+        nutritionEstimateSource = nutritionEstimateSource,
+        nutritionEstimateNote = nutritionEstimateNote,
         nutritionGaps = nutritionGaps,
+        recommendations = recommendations,
+        safetyWarnings = safetyWarnings,
         symptomGuidance = symptomGuidance,
         weightContext = weightContext,
         urgentWarning = urgentWarning,
@@ -65,27 +75,36 @@ object AiSummaryRecordFactory {
         request: AiSummaryRequest,
         pregnancyProfileId: String?,
         reason: String,
-    ): AiSummaryRecord = AiSummaryRecord(
-        requestType = request.requestType,
-        date = request.date,
-        weekId = request.weekId,
-        pregnancyProfileId = pregnancyProfileId,
-        inputContextVersion = request.inputContextVersion,
-        summary = message,
-        stageContext = if (localNutritionGaps.isEmpty()) {
-            "Use your saved logs and deterministic nutrition summaries for tracking while AI is unavailable."
-        } else {
-            "Local nutrition gaps detected: ${localNutritionGaps.joinToString()}"
-        },
-        urgentWarning = urgentWarning,
-        urgentReasons = urgentReasons,
-        nextSteps = if (urgentWarning) {
-            listOf("Because a red-flag symptom was reported, seek medical advice urgently.")
-        } else {
-            listOf("Review your local nutrition gaps and contact your care team for medical concerns.")
-        },
-        disclaimer = disclaimer,
-        fallback = true,
-        fallbackReason = reason,
-    )
+    ): AiSummaryRecord {
+        val localEstimateMerge = AiNutritionEstimateMerger.merge(
+            aiEstimates = emptyMap(),
+            localTotals = request.nutritionTotals,
+        )
+        return AiSummaryRecord(
+            requestType = request.requestType,
+            date = request.date,
+            weekId = request.weekId,
+            pregnancyProfileId = pregnancyProfileId,
+            inputContextVersion = request.inputContextVersion,
+            summary = message,
+            stageContext = if (localNutritionGaps.isEmpty()) {
+                "Use your saved logs and deterministic nutrition summaries for tracking while AI is unavailable."
+            } else {
+                "Local nutrition gaps detected: ${localNutritionGaps.joinToString()}"
+            },
+            nutritionEstimates = localEstimateMerge.estimates,
+            nutritionEstimateSource = localEstimateMerge.source,
+            nutritionEstimateNote = localEstimateMerge.note,
+            urgentWarning = urgentWarning,
+            urgentReasons = urgentReasons,
+            nextSteps = if (urgentWarning) {
+                listOf("Because a red-flag symptom was reported, seek medical advice urgently.")
+            } else {
+                listOf("Review your local nutrition gaps and contact your care team for medical concerns.")
+            },
+            disclaimer = disclaimer,
+            fallback = true,
+            fallbackReason = reason,
+        )
+    }
 }

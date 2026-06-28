@@ -1,16 +1,68 @@
 package com.pregnancydiet.app.ai
 
 private const val JSON_RESPONSE_INSTRUCTIONS = """
-Return JSON only using this schema: {
+Return strict JSON only. Do not include markdown fences, headings, bullets, or any extra text. Use this schema: {
   "summary": "short educational summary",
   "stageContext": "pregnancy week or trimester context",
+    "nutritionEstimates": {},
   "nutritionGaps": [],
+    "recommendations": [],
+    "safetyWarnings": [],
   "symptomGuidance": null,
   "weightContext": null,
   "urgentWarning": false,
   "urgentReasons": [],
   "nextSteps": ["What to do now", "When to contact your clinician"],
   "disclaimer": "This is educational guidance and does not replace medical advice."
+}
+"""
+
+private const val DAILY_NUTRITION_JSON_RESPONSE_INSTRUCTIONS = """
+Return strict JSON only. Do not include markdown fences, headings, bullets, commentary, or any extra text.
+This is pregnancy nutrition support for education and tracking only, not medical diagnosis or treatment.
+The response must include: summary, nutritionEstimates, nutritionGaps, recommendations, safetyWarnings, nextSteps, and disclaimer.
+Every nutritionGaps item must include nutrientKey, displayName, status, explanation, foodSuggestions, and safetyNote. Do not omit status or explanation.
+Every nutritionEstimates item must be an object with value, confidence, and explanation.
+Use these nutritionEstimates keys exactly: caloriesKcal, proteinGrams, carbsGrams, fatGrams, fiberGrams, folateMcg, ironMg, calciumMg, vitaminDMcg, vitaminB12Mcg, iodineMcg, omega3Mg, cholineMg, waterMl.
+Estimate totals from the logged foods. If a value is uncertain, use confidence "low" and explain briefly.
+Do not recommend changing prescribed supplements or medication; say to contact a gynecologist for medical concerns or supplement changes.
+
+Example JSON response:
+{
+    "summary": "Based on the foods logged today, your meals include protein and calcium sources, with a few nutrients that may need attention.",
+    "stageContext": "Pregnancy nutrition needs vary by week and trimester.",
+    "nutritionEstimates": {
+        "caloriesKcal": { "value": 1850, "confidence": "medium", "explanation": "Estimated from the logged meals and portions." },
+        "proteinGrams": { "value": 72.5, "confidence": "medium", "explanation": "Estimated from eggs, yogurt, chicken, and lentils logged today." },
+        "carbsGrams": { "value": 210, "confidence": "low", "explanation": "Estimated from grains, fruit, dairy, and legumes." },
+        "fatGrams": { "value": 65, "confidence": "low", "explanation": "Estimated from dairy, eggs, oils, nuts, and animal foods if logged." },
+        "fiberGrams": { "value": 26, "confidence": "medium", "explanation": "Estimated from vegetables, fruit, and legumes." },
+        "folateMcg": { "value": 450, "confidence": "low", "explanation": "Estimated from greens, legumes, and fortified foods if logged." },
+        "ironMg": { "value": 15, "confidence": "low", "explanation": "Estimated from meats, legumes, eggs, greens, and fortified foods." },
+        "calciumMg": { "value": 900, "confidence": "medium", "explanation": "Estimated from dairy or calcium-rich foods logged today." },
+        "vitaminDMcg": { "value": 6, "confidence": "low", "explanation": "Food-based vitamin D estimates are approximate." },
+        "vitaminB12Mcg": { "value": 2.4, "confidence": "low", "explanation": "Estimated from animal foods or fortified foods if logged." },
+        "iodineMcg": { "value": 120, "confidence": "low", "explanation": "Estimated from dairy, eggs, seafood, or iodized salt if evident." },
+        "omega3Mg": { "value": 300, "confidence": "low", "explanation": "Estimated from fish, eggs, walnuts, chia, or flax if logged." },
+        "cholineMg": { "value": 360, "confidence": "low", "explanation": "Estimated from eggs, meat, fish, dairy, and legumes." },
+        "waterMl": { "value": 1800, "confidence": "low", "explanation": "Estimated only from logged drinks or water entries." }
+    },
+    "nutritionGaps": [
+        {
+            "nutrientKey": "ironMg",
+            "displayName": "Iron",
+            "status": "low",
+            "explanation": "Iron may need attention based on today's logged foods and pregnancy nutrition needs.",
+            "foodSuggestions": ["lentils", "beans", "lean meat"],
+            "safetyNote": "For medical concerns or supplement changes, contact your gynecologist."
+        }
+    ],
+    "recommendations": ["Add a food-based iron source with vitamin C if it fits your plan."],
+    "safetyWarnings": ["This is educational guidance and does not replace medical advice."],
+    "urgentWarning": false,
+    "urgentReasons": [],
+    "nextSteps": ["Review persistent gaps with your care team."],
+    "disclaimer": "This app provides educational guidance and does not replace medical advice."
 }
 """
 
@@ -35,14 +87,21 @@ class PregnancyAdvicePromptBuilder {
 class DietPlanPromptBuilder {
     fun build(request: DietAiRequest): String = buildString {
         appendLine(SAFETY_GUARDRAILS)
-        appendLine(JSON_RESPONSE_INSTRUCTIONS)
-        appendLine("Task: Create trimester-aware food suggestions and a brief diet plan.")
+        appendLine(DAILY_NUTRITION_JSON_RESPONSE_INSTRUCTIONS)
+        appendLine("Task: Generate today's daily nutrition summary with AI-assisted nutrition estimates from logged foods.")
         appendLine("Pregnancy week: ${request.pregnancyWeek ?: "unknown"}; trimester: ${request.trimester ?: "unknown"}.")
         if (request.allergies.isNotEmpty()) appendLine("Avoid allergies: ${request.allergies.joinToString()}.")
         if (request.dietaryRestrictions.isNotEmpty()) appendLine("Respect dietary restrictions: ${request.dietaryRestrictions.joinToString()}.")
         if (request.medicalConditions.isNotEmpty()) appendLine("Consider medical conditions only in general educational terms: ${request.medicalConditions.joinToString()}.")
         if (request.nutritionGaps.isNotEmpty()) appendLine("Focus on food-based support for gaps: ${request.nutritionGaps.joinToString()}.")
-        if (request.foodsToday.isNotEmpty()) appendLine("Foods today, minimized context: ${request.foodsToday.take(8).joinToString { it.foodName }}.")
+        if (request.foodsToday.isNotEmpty()) {
+            appendLine("Logged foods today. Estimate nutrition totals from these items:")
+            request.foodsToday.take(20).forEach { food ->
+                appendLine("- ${food.foodName}: ${food.quantity} ${food.unit}, weight grams ${food.weightGrams ?: "unknown"}, local estimate calories ${food.nutrition.caloriesKcal}, protein ${food.nutrition.proteinGrams} g, fiber ${food.nutrition.fiberGrams} g, folate ${food.nutrition.folateMcg} mcg, iron ${food.nutrition.ironMg} mg, calcium ${food.nutrition.calciumMg} mg, vitamin D ${food.nutrition.vitaminDMcg} mcg, B12 ${food.nutrition.vitaminB12Mcg} mcg, iodine ${food.nutrition.iodineMcg} mcg, omega-3 ${food.nutrition.omega3Mg} mg, choline ${food.nutrition.cholineMg} mg.")
+            }
+        } else {
+            appendLine("No foods were logged today; return low-confidence zero estimates and recommend logging meals.")
+        }
     }
 }
 

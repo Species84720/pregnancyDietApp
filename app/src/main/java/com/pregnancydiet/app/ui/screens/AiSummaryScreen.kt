@@ -29,12 +29,16 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.pregnancydiet.app.ai.AiNutritionGapGuidance
+import com.pregnancydiet.app.ai.AiNutritionEstimate
+import com.pregnancydiet.app.ai.AiNutritionEstimateSource
+import com.pregnancydiet.app.ai.AiNutritionEstimates
 import com.pregnancydiet.app.ai.AiSummaryAction
 import com.pregnancydiet.app.ai.AiSummaryRecord
 import com.pregnancydiet.app.ai.AiSummaryViewModel
 import com.pregnancydiet.app.ai.AiSymptomGuidance
 import com.pregnancydiet.app.ai.AiWeightContext
 import com.pregnancydiet.app.common.AppConstants
+import java.util.Locale
 
 @Composable
 fun AiSummaryScreen(
@@ -261,8 +265,15 @@ private fun AiSummaryResultSection(summary: AiSummaryRecord) {
             UrgentAiWarning(summary)
         }
         AiSummaryCard(summary)
+        NutritionEstimateSection(summary)
         if (summary.nutritionGaps.isNotEmpty()) {
             NutritionGapGuidanceSection(summary.nutritionGaps)
+        }
+        if (summary.recommendations.isNotEmpty()) {
+            GuidanceListCard("Recommendations", summary.recommendations)
+        }
+        if (summary.safetyWarnings.isNotEmpty()) {
+            GuidanceListCard("Safety reminders", summary.safetyWarnings)
         }
         summary.symptomGuidance?.let { SymptomGuidanceCard(it) }
         summary.weightContext?.let { WeightContextCard(it) }
@@ -341,13 +352,96 @@ private fun AiSummaryCard(summary: AiSummaryRecord) {
                     color = MaterialTheme.colorScheme.onPrimaryContainer,
                 )
             }
-            summary.fallbackReason?.let {
+            if (summary.fallback) {
                 Text(
-                    text = "Fallback reason: $it",
+                    text = "AI details were unavailable, so this safe local fallback is shown. Raw technical details are kept out of the app screen.",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onPrimaryContainer,
                 )
             }
+        }
+    }
+}
+
+@Composable
+private fun NutritionEstimateSection(summary: AiSummaryRecord) {
+    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        Text(
+            text = "Nutrition estimates",
+            style = MaterialTheme.typography.titleLarge,
+            fontWeight = FontWeight.SemiBold,
+        )
+        Card(modifier = Modifier.fillMaxWidth()) {
+            Column(
+                modifier = Modifier.padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                Text(
+                    text = summary.nutritionEstimateSource.label,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.SemiBold,
+                )
+                if (summary.nutritionEstimateSource == AiNutritionEstimateSource.MixedAiLocal) {
+                    Text(
+                        text = "Some values were estimated locally because the AI response was incomplete.",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+                summary.nutritionEstimateNote.takeIf { it.isNotBlank() }?.let {
+                    Text(
+                        text = it,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+                Text(
+                    text = "Nutrition values are estimates based on your logged foods. AI-assisted estimates may be approximate and should not replace medical advice.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+        }
+        summary.nutritionEstimates.rows().forEach { row ->
+            NutritionEstimateRow(row)
+        }
+    }
+}
+
+@Composable
+private fun NutritionEstimateRow(row: NutritionEstimateDisplayRow) {
+    Card(modifier = Modifier.fillMaxWidth()) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(6.dp),
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    text = row.label,
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.Medium,
+                )
+                Text(
+                    text = "${row.estimate.value.formatShort()} ${row.unit}",
+                    style = MaterialTheme.typography.bodyMedium,
+                    textAlign = TextAlign.End,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+            Text(
+                text = "${row.estimate.source.displaySourceLabel()} · Confidence: ${row.estimate.confidence}",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            Text(
+                text = row.estimate.explanation,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
         }
     }
 }
@@ -509,6 +603,64 @@ private fun GuidanceList(
         }
     }
 }
+
+@Composable
+private fun GuidanceListCard(
+    title: String,
+    items: List<String>,
+) {
+    if (items.isEmpty()) return
+    Card(modifier = Modifier.fillMaxWidth()) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.SemiBold,
+            )
+            items.forEach { item ->
+                Text(
+                    text = "• $item",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+        }
+    }
+}
+
+private data class NutritionEstimateDisplayRow(
+    val label: String,
+    val unit: String,
+    val estimate: AiNutritionEstimate,
+)
+
+private fun AiNutritionEstimates.rows(): List<NutritionEstimateDisplayRow> = listOf(
+    NutritionEstimateDisplayRow("Calories", "kcal", caloriesKcal),
+    NutritionEstimateDisplayRow("Protein", "g", proteinGrams),
+    NutritionEstimateDisplayRow("Carbs", "g", carbsGrams),
+    NutritionEstimateDisplayRow("Fat", "g", fatGrams),
+    NutritionEstimateDisplayRow("Fiber", "g", fiberGrams),
+    NutritionEstimateDisplayRow("Folate", "mcg", folateMcg),
+    NutritionEstimateDisplayRow("Iron", "mg", ironMg),
+    NutritionEstimateDisplayRow("Calcium", "mg", calciumMg),
+    NutritionEstimateDisplayRow("Vitamin D", "mcg", vitaminDMcg),
+    NutritionEstimateDisplayRow("Vitamin B12", "mcg", vitaminB12Mcg),
+    NutritionEstimateDisplayRow("Iodine", "mcg", iodineMcg),
+    NutritionEstimateDisplayRow("Omega-3", "mg", omega3Mg),
+    NutritionEstimateDisplayRow("Choline", "mg", cholineMg),
+    NutritionEstimateDisplayRow("Water", "ml", waterMl),
+)
+
+private fun String.displaySourceLabel(): String = when (this) {
+    "ai" -> "AI-assisted"
+    "local" -> "Local fallback"
+    else -> replaceFirstChar { it.uppercase() }
+}
+
+private fun Double.formatShort(): String = String.format(Locale.US, "%.1f", this)
 
 private fun AiSummaryAction?.labelOr(
     defaultLabel: String,
