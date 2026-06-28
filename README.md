@@ -17,7 +17,7 @@ The app must be built in phases from MVP to final product. Health and pregnancy 
 
 ### Prerequisites
 
-- Android Studio with Android SDK 35 installed; the app targets SDK 34
+- Android Studio with Android SDK 35 installed; the app targets SDK 34 and supports Android 6.0/API 23+
 - JDK 17
 - No Firebase secrets are committed. Add environment-specific Firebase configuration only when implementing the Firebase phase.
 
@@ -81,7 +81,8 @@ firebase deploy --only firestore:rules
 ### MVP release notes
 
 - Build before release with `./gradlew :app:assembleDebug` and run unit tests with `./gradlew :app:testDebugUnitTest`.
-- The latest GitHub release is `v0.1.4` and includes the generated debug APK asset for installation testing.
+- The latest GitHub release is `v0.1.5` and includes a signed APK asset for installation testing.
+- If Android reports “App not installed” while updating from `v0.1.0` through `v0.1.4`, uninstall the older sideloaded debug build first. Earlier GitHub APKs were debug-signed by different build machines, and Android blocks same-package updates signed with a different certificate.
 - Configure Firebase Auth, Firestore, and local `GOOGLE_WEB_CLIENT_ID` before testing real sign-in.
 - Deploy Firestore rules so all reads and writes remain scoped to `request.auth.uid == userId`.
 - Do not add Pollinations.ai or other AI provider `sk_` secrets to Android app code. Frontend mode may use only a bundled `pk_` publishable key or a Pollinations-supported client/user credential.

@@ -1,20 +1,22 @@
 {
   "persistent_brief": "This is an android application capable of pregnancy diet plan. Were you can give it what you eat and it gives back if you took the right nutrition and other details.",
-  "project_summary": "Android Kotlin/Jetpack Compose pregnancy diet tracker using Firebase Auth and Firestore. The app tracks onboarding/profile data, symptoms, supplements, meals, weight, deterministic nutrition summaries, AI insights, reminders, reports, and settings/privacy controls.",
+  "project_summary": "Android Kotlin/Jetpack Compose pregnancy diet tracker using Firebase Auth and Firestore. The app tracks onboarding/profile data, symptoms, supplements, meals, weight, deterministic nutrition summaries, AI insights, reminders, reports, settings/privacy controls, and signed GitHub APK releases for sideload testing.",
   "architecture_notes": [
-    "Layered packages remain split across ui/screens, viewmodels/features, data interfaces, firebase repositories, model classes, nutrition logic, ai provider/request parsing, and safety rules.",
-    "AI insights are generated through the AI repository/provider abstraction, validated by safety guardrails, embedded back into source Firestore documents, and now also logged deterministically under users/{uid}/aiSummaries/{summaryId}.",
-    "Daily and weekly AI insight flows persist AI nutrition estimates to their summary documents with aiNutritionProcessed, nutritionProcessedBy, and nutritionProcessingStatus markers; reusable AI-processed summaries skip repeat provider calls for the same date or ISO week."
+    "Layered packages remain split across ui/screens, viewmodels/features, data interfaces, firebase repositories, model classes, nutrition logic, ai provider/request parsing, safety rules, and reminder scheduling.",
+    "AI insights are generated through the AI repository/provider abstraction, validated by safety guardrails, embedded back into source Firestore documents, and also logged deterministically under users/{uid}/aiSummaries/{summaryId}.",
+    "Daily and weekly AI insight flows persist AI nutrition estimates to their summary documents with aiNutritionProcessed, nutritionProcessedBy, and nutritionProcessingStatus markers; reusable AI-processed summaries skip repeat provider calls for the same date or ISO week.",
+    "GitHub sideload releases now publish a signed APK and document that older debug-signed builds may need to be uninstalled because Android rejects updates signed by a different certificate."
   ],
   "quality_focus": [
+    "Use ANDROID_HOME=/opt/android-sdk for local validation because local.properties does not define sdk.dir in this environment.",
     "Validated with ANDROID_HOME=/opt/android-sdk ./gradlew :app:testDebugUnitTest --console=plain --no-daemon.",
-    "Validated with ANDROID_HOME=/opt/android-sdk ./gradlew assembleDebug --console=plain --no-daemon.",
-    "Debug APK generated at app/build/outputs/apk/debug/app-debug.apk.",
-    "GitHub release v0.1.4 publishes the generated debug APK as a release asset from the current branch.",
-    "Baseline validation without ANDROID_HOME still fails because local.properties does not define sdk.dir; use ANDROID_HOME=/opt/android-sdk in this environment."
+    "Validated with ANDROID_HOME=/opt/android-sdk ./gradlew assembleDebug assembleRelease --console=plain --no-daemon.",
+    "GitHub release v0.1.5 publishes app/build/outputs/apk/release/app-release.apk as a signed APK asset; do not publish unsigned APKs as installable assets.",
+    "Older v0.1.0-v0.1.3 debug APKs used a different debug signing certificate than v0.1.4/v0.1.5; same-package Android updates across that boundary require uninstalling the older sideloaded app first."
   ],
   "open_followups": [
-    "Consider invalidating or versioning cached daily/weekly AI summaries if users edit meals, symptoms, supplements, or profile inputs after an AI-processed summary has been saved."
+    "Consider invalidating or versioning cached daily/weekly AI summaries if users edit meals, symptoms, supplements, or profile inputs after an AI-processed summary has been saved.",
+    "Move GitHub release signing to a private, stable release keystore before distributing beyond internal/manual testing."
   ],
   "recent_requests": [
     {
@@ -31,12 +33,17 @@
       "timestamp": "2026-06-28T18:21:29+00:00",
       "action": "Update Existing Project",
       "prompt": "You did not release the app to github"
+    },
+    {
+      "timestamp": "2026-06-28T18:25:58+00:00",
+      "action": "Update Existing Project",
+      "prompt": "The new release just says app not installed and nothing happens. Fix it and release again to git."
     }
   ],
   "last_task": {
     "status": "completed",
     "action": "Update Existing Project",
-    "updated_at": "2026-06-28T18:21:37+00:00",
-    "log_excerpt": "Released the app to GitHub by bumping Android version metadata to 0.1.4, rebuilding the debug APK, tagging v0.1.4, creating the GitHub release, and uploading the generated APK asset."
+    "updated_at": "2026-06-28T18:26:05+00:00",
+    "log_excerpt": "Fixed the GitHub sideload packaging by bumping to v0.1.5/versionCode 6, lowering minSdk to API 23, making release APKs signed instead of unsigned, documenting the legacy debug-signature update conflict, and validating unit tests plus debug/release APK builds before publishing the new release."
   }
 }

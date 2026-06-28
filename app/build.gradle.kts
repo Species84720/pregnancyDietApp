@@ -32,10 +32,10 @@ android {
 
     defaultConfig {
         applicationId = "com.pregnancydiet.app"
-        minSdk = 26
+        minSdk = 23
         targetSdk = 34
-        versionCode = 5
-        versionName = "0.1.4"
+        versionCode = 6
+        versionName = "0.1.5"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         resValue("string", "google_web_client_id", googleWebClientId)
@@ -46,6 +46,8 @@ android {
 
     buildTypes {
         release {
+            // GitHub sideload APKs must be signed; production builds should use a private release key.
+            signingConfig = signingConfigs.getByName("debug")
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
